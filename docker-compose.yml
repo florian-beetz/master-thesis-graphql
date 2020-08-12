@@ -1,0 +1,81 @@
+version: '3'
+
+services:
+  traefk:
+    image: traefik
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "8080:80"
+      - "8090:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  gateway:
+    build: ./graphql-gateway
+    environment:
+      - INVENTORY_HOST=http://host.docker.internal:8080/inventory/graphql
+      - ORDER_HOST=http://host.docker.internal:8080/order/graphql
+    depends_on:
+      - traefk
+      - inventory
+      - orders
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gateway.rule=PathPrefix(`/gateway/`, `/gateway`)"
+      - "traefik.http.routers.gateway.entrypoints=web"
+      - "traefik.http.middlewares.gateway-stripprefix.stripprefix.prefixes=/gateway/,/gateway"
+
+  inventory:
+    build: ./inventory-service
+    environment:
+      - INVENTORY_DB_HOST=inventory_db
+      - INVENTORY_DB_PORT=5432
+      - INVENTORY_DB_DATABASE=postgres
+      - INVENTORY_DB_USER=postgres
+      - INVENTORY_DB_PASSWORD=${INVENTORY_DB_PASSWORD}
+    depends_on:
+      - inventory_db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.inventory.rule=PathPrefix(`/inventory/`, `/inventory`)"
+      - "traefik.http.routers.inventory.entrypoints=web"
+
+  inventory_db:
+    image: postgres
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_PASSWORD=${INVENTORY_DB_PASSWORD}
+    healthcheck: &pg_health
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  orders:
+    build: ./order-service
+    environment:
+      - ORDER_DB_HOST=order_db
+      - ORDER_DB_PORT=5432
+      - ORDER_DB_DATABASE=postgres
+      - ORDER_DB_USER=postgres
+      - ORDER_DB_PASSWORD=${ORDER_DB_PASSWORD}
+#    depends_on:
+#      - order_db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.order.rule=PathPrefix(`/order/`, `/order`)"
+      - "traefik.http.routers.order.entrypoints=web"
+
+#  order_db:
+#    image: postgres
+#    ports:
+#      - 5432:5432
+#    environment:
+#      - POSTGRES_PASSWORD=${ORDER_DB_PASSWORD}
+#    healthcheck: *pg_health

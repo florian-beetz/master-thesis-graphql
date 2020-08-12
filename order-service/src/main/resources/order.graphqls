@@ -1,0 +1,37 @@
+type Item @key(fields: "id") @extends {
+    id: ID! @external
+}
+
+type ItemStock @key(fields: "id") @extends {
+    id: ID! @external
+}
+
+type Order @key(fields: "id") {
+    id: ID!
+    positions: [OrderPosition]!
+}
+
+type OrderPosition {
+    item: Item!
+    stock: [ItemStockPosition]!
+    amount: Int 
+}
+
+type ItemStockPosition {
+    id: ID!
+    amount: Int!
+    stock: ItemStock!
+}
+
+type Query {
+    order(id: ID!): Order
+}
+
+type CreateOrderInput {
+    itemId: ID!
+    amount: Int!
+}
+
+type Mutation {
+    #createOrder(positions: [CreateOrderInput]): Order
+}

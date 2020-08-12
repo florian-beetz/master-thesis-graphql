@@ -1,0 +1,29 @@
+graphql:
+  servlet:
+    mapping: /graphql
+    corsEnabled: false
+    exception-handlers-enabled: true
+
+graphiql:
+  mapping: /graphiql
+  endpoint:
+    graphql: /graphql
+    subscriptions: /subscriptions
+  subscriptions:
+    timeout: 30
+    reconnect: false
+  static:
+    base-path: /
+  enabled: true
+  pageTitle: Inventory GraphiQL
+  
+logging:
+  level:
+    root: DEBUG
+    de.florianbeetz: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+
+
+server:
+  servlet:
+    context-path: /inventory

@@ -1,0 +1,45 @@
+type Item @key(fields: "id") {
+    id: ID!
+    title: String!
+    description: String
+    price: Float!
+
+    stock(page: Int, size: Int): [ItemStock]
+}
+
+type Warehouse @key(fields: "id") {
+    id: ID!
+    name: String!
+
+    stock(page: Int, size: Int): [ItemStock]
+}
+
+type ItemStock @key(fields: "id") {
+    id: ID!
+    item: Item!
+    warehouse: Warehouse!
+    inStock: Int
+    available: Int
+}
+
+type Query {
+    items(page: Int, size: Int): [Item]
+    item(id: ID!): Item
+
+    warehouses(page: Int, size: Int): [Warehouse]
+    warehouse(id: ID!): Warehouse
+}
+
+interface MutationResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+}
+
+type Mutation {
+    createItem(title: String!, description: String, price: Float!): Item
+
+    createWarehouse(name: String!): Warehouse
+
+    createItemStock(itemId: ID!, warehouseId: ID!, inStock: Int!, available: Int): ItemStock
+}

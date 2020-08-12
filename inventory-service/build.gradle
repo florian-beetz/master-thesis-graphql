@@ -1,0 +1,40 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+}
+
+group 'de.florianbeetz.ma.graphql.inventory'
+version '1.0-SNAPSHOT'
+sourceCompatibility = '14'
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+repositories {
+    mavenCentral()
+    jcenter()
+}
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:7.1.0'
+    runtimeOnly 'com.graphql-java-kickstart:graphiql-spring-boot-starter:7.1.0'
+    implementation 'com.apollographql.federation:federation-graphql-java-support:0.4.3'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'com.graphql-java-kickstart:graphql-spring-boot-starter-test:5.10.0'
+}
+test {
+    useJUnitPlatform()
+}
