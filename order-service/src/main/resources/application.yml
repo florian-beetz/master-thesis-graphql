@@ -27,3 +27,11 @@ logging:
 server:
   servlet:
     context-path: /order
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${ORDER_DB_HOST}:${ORDER_DB_PORT}/${ORDER_DB_DATABASE}
+    username: ${ORDER_DB_USER}
+    password: ${ORDER_DB_PASSWORD}
+  jpa:
+    generate-ddl: true
