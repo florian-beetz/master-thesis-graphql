@@ -1,4 +1,4 @@
-# Master Thesis Case Study -- REST Microservice
+# Master Thesis Case Study - GraphQL Microservice
 
 This repository contains a small sample project I am developing as a part of my
 [Master Thesis](https://cloud.florianbeetz.de/s/6pbS45PAQxt7ep4/download).
