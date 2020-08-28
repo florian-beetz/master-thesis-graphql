@@ -16,4 +16,9 @@ public interface ItemStockRepository extends PagingAndSortingRepository<ItemStoc
     @Query("select i from ItemStockEntity i where i.warehouse.id = :id")
     Page<ItemStockEntity> findAllByWarehouseId(@Param("id") long id, Pageable page);
 
+    @Query("select coalesce(sum(i.available), 0) from ItemStockEntity i where i.item.id = :id")
+    long totalAvailableByItemId(@Param("id") long id);
+
+    @Query("select coalesce(sum(i.inStock), 0) from ItemStockEntity i where i.item.id = :id")
+    long totalInStockByItemId(@Param("id") long id);
 }

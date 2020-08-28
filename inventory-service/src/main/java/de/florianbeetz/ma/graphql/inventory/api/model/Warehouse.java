@@ -1,4 +1,4 @@
-package de.florianbeetz.ma.graphql.inventory.api;
+package de.florianbeetz.ma.graphql.inventory.api.model;
 
 import java.util.List;
 import java.util.function.BiFunction;

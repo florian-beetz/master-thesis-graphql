@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,5 +32,10 @@ public class ItemStockEntity {
 
     @Column(nullable = false)
     private long available;
+
+    @Transient
+    public long getReserved() {
+        return inStock - available;
+    }
 
 }

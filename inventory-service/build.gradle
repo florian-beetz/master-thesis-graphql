@@ -6,7 +6,7 @@ plugins {
 
 group 'de.florianbeetz.ma.graphql.inventory'
 version '1.0-SNAPSHOT'
-sourceCompatibility = '14'
+sourceCompatibility = '13'
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
@@ -18,6 +18,8 @@ repositories {
 }
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.keycloak:keycloak-spring-boot-starter:11.0.0'
 
     implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:7.1.0'
     runtimeOnly 'com.graphql-java-kickstart:graphiql-spring-boot-starter:7.1.0'

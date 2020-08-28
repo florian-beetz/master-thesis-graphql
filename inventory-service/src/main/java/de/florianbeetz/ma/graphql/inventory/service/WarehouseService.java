@@ -1,21 +1,27 @@
-package de.florianbeetz.ma.graphql.inventory.api;
+package de.florianbeetz.ma.graphql.inventory.service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.florianbeetz.ma.graphql.inventory.api.model.Warehouse;
 import de.florianbeetz.ma.graphql.inventory.data.WarehouseEntity;
 import de.florianbeetz.ma.graphql.inventory.data.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for CRUD operations on {@link Warehouse Warehouses}.
+ */
 @Service
 public class WarehouseService {
 
+    /** default page to use if no specific page was requested */
     public static final int DEFAULT_PAGE = 0;
+    /** default page size to use if no specific page size was requested */
     public static final int DEFAULT_SIZE = 20;
+    /** maximum page size */
     public static final int MAX_SIZE = 200;
 
     private final WarehouseRepository warehouseRepository;

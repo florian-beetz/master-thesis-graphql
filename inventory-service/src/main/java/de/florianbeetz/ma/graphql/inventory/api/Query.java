@@ -2,11 +2,19 @@ package de.florianbeetz.ma.graphql.inventory.api;
 
 import java.util.List;
 
+import de.florianbeetz.ma.graphql.inventory.api.model.Item;
+import de.florianbeetz.ma.graphql.inventory.api.model.Warehouse;
+import de.florianbeetz.ma.graphql.inventory.service.ItemService;
+import de.florianbeetz.ma.graphql.inventory.service.WarehouseService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import graphql.schema.DataFetchingEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+/**
+ * Main entry point for handling GraphQL queries.
+ */
 @Service
 public class Query implements GraphQLQueryResolver {
 
@@ -27,10 +35,12 @@ public class Query implements GraphQLQueryResolver {
         return itemService.lookupItems(page, size);
     }
 
+    @Secured("ROLE_inventory_admin")
     public Warehouse warehouse(Long id, DataFetchingEnvironment dataFetchingEnvironment) {
         return warehouseService.lookupWarehouse(id);
     }
 
+    @Secured("ROLE_inventory_admin")
     public List<Warehouse> warehouses(Integer page, Integer size, final DataFetchingEnvironment dataFetchingEnvironment) {
         return warehouseService.lookupWarehouses(page, size);
     }

@@ -1,0 +1,4 @@
+POST http://host.docker.internal:8080/auth/realms/ma-graphql-shop/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id=inventory&client_secret=3c7d7a71-dcab-41bf-bd00-1abd4330e542&username=admin&password=admin

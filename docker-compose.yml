@@ -1,7 +1,10 @@
 version: '3'
 
+volumes:
+  keycloak_db:
+
 services:
-  traefk:
+  traefik:
     image: traefik
     command:
       #- "--log.level=DEBUG"
@@ -21,7 +24,7 @@ services:
       - INVENTORY_HOST=http://host.docker.internal:8080/inventory/graphql
       - ORDER_HOST=http://host.docker.internal:8080/order/graphql
     depends_on:
-      - traefk
+      - traefik
       - inventory
       - orders
     labels:
@@ -30,6 +33,18 @@ services:
       - "traefik.http.routers.gateway.entrypoints=web"
       - "traefik.http.middlewares.gateway-stripprefix.stripprefix.prefixes=/gateway/,/gateway"
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:11.0.0
+    environment:
+      - KEYCLOAK_USER=${KEYCLOAK_USER}
+      - KEYCLOAK_PASSWORD=${KEYCLOAK_PASSWORD}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule=PathPrefix(`/auth/`, `/auth`)"
+      - "traefik.http.routers.keycloak.entrypoints=web"
+    volumes:
+    - keycloak_db:/opt/jboss/keyclaok/standalone/data
+        
   inventory:
     build: ./inventory-service
     environment:
@@ -38,6 +53,9 @@ services:
       - INVENTORY_DB_DATABASE=postgres
       - INVENTORY_DB_USER=postgres
       - INVENTORY_DB_PASSWORD=${INVENTORY_DB_PASSWORD}
+      - INVENTORY_AUTH_URL=${ROOT_URL}/auth
+      - INVENTORY_AUTH_CLIENT=${INVENTORY_CLIENT_ID}
+      - INVENTORY_AUTH_SECRET=${INVENTORY_CLIENT_SECRET}
     depends_on:
       - inventory_db
     labels:
@@ -65,17 +83,17 @@ services:
       - ORDER_DB_DATABASE=postgres
       - ORDER_DB_USER=postgres
       - ORDER_DB_PASSWORD=${ORDER_DB_PASSWORD}
-#    depends_on:
-#      - order_db
+    depends_on:
+      - order_db
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.order.rule=PathPrefix(`/order/`, `/order`)"
       - "traefik.http.routers.order.entrypoints=web"
 
-#  order_db:
-#    image: postgres
-#    ports:
-#      - 5432:5432
-#    environment:
-#      - POSTGRES_PASSWORD=${ORDER_DB_PASSWORD}
-#    healthcheck: *pg_health
+  order_db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=${ORDER_DB_PASSWORD}
+    healthcheck: *pg_health

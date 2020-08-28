@@ -5,6 +5,9 @@ type Item @key(fields: "id") {
     price: Float!
 
     stock(page: Int, size: Int): [ItemStock]
+
+    totalAvailable: Int!
+    totalInStock: Int!
 }
 
 type Warehouse @key(fields: "id") {
@@ -33,7 +36,37 @@ type Query {
 interface MutationResponse {
     code: String!
     success: Boolean!
-    message: String!
+    message: String
+}
+
+type ReservationPosition {
+    stock: ItemStock!
+    amount: Int!
+
+    item: Item!
+}
+
+type ReservationResponse implements MutationResponse {
+    code: String!
+    success: Boolean!
+    message: String
+
+    positions: [ReservationPosition]
+}
+
+type BookOutResponse implements MutationResponse {
+    code: String!
+    success: Boolean!
+    message: String
+}
+
+input StockPosition {
+    stockId: ID!
+    amount: Int!
+}
+
+input BookOutInput {
+    positions: [StockPosition]!
 }
 
 type Mutation {
@@ -42,4 +75,8 @@ type Mutation {
     createWarehouse(name: String!): Warehouse
 
     createItemStock(itemId: ID!, warehouseId: ID!, inStock: Int!, available: Int): ItemStock
+
+    reserveItems(itemId: ID!, amount: Int!): ReservationResponse
+
+    bookOutItems(bookOutInput: BookOutInput!): BookOutResponse!
 }
