@@ -33,7 +33,7 @@ type Query {
     warehouse(id: ID!): Warehouse
 }
 
-interface MutationResponse {
+interface ApiResponse {
     code: String!
     success: Boolean!
     message: String
@@ -46,7 +46,7 @@ type ReservationPosition {
     item: Item!
 }
 
-type ReservationResponse implements MutationResponse {
+type ReservationResponse implements ApiResponse {
     code: String!
     success: Boolean!
     message: String
@@ -54,7 +54,7 @@ type ReservationResponse implements MutationResponse {
     positions: [ReservationPosition]
 }
 
-type BookOutResponse implements MutationResponse {
+type BookOutResponse implements ApiResponse {
     code: String!
     success: Boolean!
     message: String

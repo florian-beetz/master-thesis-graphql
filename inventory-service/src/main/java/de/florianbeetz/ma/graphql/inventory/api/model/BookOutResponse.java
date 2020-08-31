@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class BookOutResponse implements MutationResponse {
+public class BookOutResponse implements ApiResponse {
 
     private final int code;
     private final boolean success;

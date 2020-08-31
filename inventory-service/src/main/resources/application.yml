@@ -9,9 +9,6 @@ graphiql:
   endpoint:
     graphql: /graphql
     subscriptions: /subscriptions
-  subscriptions:
-    timeout: 30
-    reconnect: false
   static:
     base-path: /
   enabled: true

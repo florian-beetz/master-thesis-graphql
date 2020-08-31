@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReservationResponse implements MutationResponse {
+public class ReservationResponse implements ApiResponse {
 
     private final List<ReservationPosition> positions;
     private final int code;
