@@ -29,7 +29,7 @@ public class GraphQLConfig {
     @Data
     private static class GraphQLType<T> {
         private final String name;
-        private final Class<T> clazz;
+        private final Class<T> modelClass;
         private final Function<Long, T> fetcher;
     }
 
@@ -62,8 +62,11 @@ public class GraphQLConfig {
                                                      .map(t -> {
                                                          final String id = values.get("id").toString();
                                                          try {
-                                                             return t.getFetcher().apply(Long.parseLong(id));
+                                                             Object result = t.getFetcher().apply(Long.parseLong(id));
+                                                             log.debug("fetching object of type {} resulted in {} (values='{}')", t.getName(), result.getClass(), values);
+                                                             return result;
                                                          } catch (NumberFormatException e) {
+                                                             log.debug("failed to fetch entity of type {} because '{}' is not a valid ID", t.getName(), id);
                                                              return null;
                                                          }
                                                      })
@@ -73,7 +76,8 @@ public class GraphQLConfig {
                                                      }))
                                  .collect(Collectors.toList()))
                          .resolveEntityType(env -> types.stream()
-                                                        .filter(t -> t.getClass().isInstance(env.getObject()))
+                                                        .filter(t -> t.getModelClass().isInstance(env.getObject()))
+                                                        .peek(t -> log.info("resolving type {} to schema type {}", env.getObject().getClass(), t.getName()))
                                                         .findAny()
                                                         .map(t -> env.getSchema().getObjectType(t.getName()))
                                                         .orElse(null))

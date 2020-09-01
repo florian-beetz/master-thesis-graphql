@@ -36,6 +36,8 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'com.graphql-java-kickstart:graphql-spring-boot-starter-test:5.10.0'
+    testImplementation 'org.springframework.security:spring-security-test'
+
 }
 test {
     useJUnitPlatform()

@@ -11,14 +11,20 @@ type Order @key(fields: "id") {
     positions: [OrderPosition]!
 }
 
+enum OrderStatus {
+    CREATED
+    PAYMENT_RECEIVED
+    SHIPPED
+    CANCELED
+}
+
 type OrderPosition {
     item: Item!
     stock: [ItemStockPosition]!
-    amount: Int 
+    amount: Int!
 }
 
 type ItemStockPosition {
-    id: ID!
     amount: Int!
     stock: ItemStock!
 }
@@ -27,11 +33,25 @@ type Query {
     order(id: ID!): Order
 }
 
-type CreateOrderInput {
+input OrderPositionInput {
     itemId: ID!
     amount: Int!
 }
 
+interface ApiResponse {
+    code: String!
+    success: Boolean!
+    message: String
+}
+
+type CreateOrderResponse implements ApiResponse {
+    order: Order
+
+    code: String!
+    success: Boolean!
+    message: String
+}
+
 type Mutation {
-    #createOrder(positions: [CreateOrderInput]): Order
+    createOrder(positions: [OrderPositionInput]!): CreateOrderResponse
 }

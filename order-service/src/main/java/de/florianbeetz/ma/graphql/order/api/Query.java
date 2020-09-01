@@ -1,5 +1,7 @@
 package de.florianbeetz.ma.graphql.order.api;
 
+import de.florianbeetz.ma.graphql.order.api.model.Order;
+import de.florianbeetz.ma.graphql.order.service.OrderService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import graphql.schema.DataFetchingEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;

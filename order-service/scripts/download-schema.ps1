@@ -1,0 +1,1 @@
+Invoke-RestMethod -Uri http://host.docker.internal:8080/gateway -Body "query {__schema {queryType {name}}}" -Method Post

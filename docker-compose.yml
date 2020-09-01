@@ -83,6 +83,10 @@ services:
       - ORDER_DB_DATABASE=postgres
       - ORDER_DB_USER=postgres
       - ORDER_DB_PASSWORD=${ORDER_DB_PASSWORD}
+      - ORDER_AUTH_URL=${ROOT_URL}/auth
+      - ORDER_AUTH_CLIENT=${ORDER_CLIENT_ID}
+      - ORDER_AUTH_SECRET=${ORDER_CLIENT_SECRET}
+      - ORDER_BASE_URL=${ROOT_URL}/gateway
     depends_on:
       - order_db
     labels:

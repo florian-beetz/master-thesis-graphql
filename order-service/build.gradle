@@ -1,3 +1,5 @@
+import static org.apache.tools.ant.taskdefs.condition.Os.*
+
 plugins {
     id 'org.springframework.boot' version '2.3.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
@@ -16,12 +18,22 @@ repositories {
     mavenCentral()
     jcenter()
 }
+sourceSets.main.java.srcDirs += ["src/gen/java"]
+configurations {
+    ruby
+}
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.keycloak:keycloak-spring-boot-starter:11.0.0'
+    implementation 'org.springframework.security.oauth:spring-security-oauth2:2.2.1.RELEASE'
 
     implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:7.1.0'
     runtimeOnly 'com.graphql-java-kickstart:graphiql-spring-boot-starter:7.1.0'
     implementation 'com.apollographql.federation:federation-graphql-java-support:0.4.3'
+    implementation 'com.shopify.graphql.support:support:0.2.0'
+    compile 'com.google.code.gson:gson:2.8.6'
+
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -34,7 +46,46 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'com.graphql-java-kickstart:graphql-spring-boot-starter-test:5.10.0'
+
+    ruby 'org.jruby:jruby:9.2.13.0'
+
 }
 test {
     useJUnitPlatform()
+}
+
+task downloadSchema {
+    dependsOn ':downloadSchemaWin', ':downloadSchemaUnix'
+}
+
+task downloadSchemaWin(type: Exec) {
+    onlyIf { isFamily("windows") }
+    workingDir "${projectDir}/scripts"
+    commandLine 'cmd', '/c', 'download-schema.bat'
+}
+
+task downloadSchemaUnix(type: Exec) {
+    onlyIf { isFamily("unix") || isFamily("mac") }
+    workingDir "${projectDir}/scripts"
+    commandLine './download-schema.sh'
+}
+
+task generateClientUpdateGems(type: JavaExec) {
+    classpath = project.configurations.ruby
+    main = "org.jruby.Main"
+    args = ['-S', 'gem', 'install', '-i', "${projectDir}/scripts/gems", 'graphql_java_gen']
+}
+
+task generateClientSources(type: JavaExec) {
+    doFirst {
+        delete "${projectDir}/src/gen/java"
+        mkdir "${projectDir}/src/gen/java/de/florianbeetz/ma/graphql/client/"
+    }
+    dependsOn ':generateClientUpdateGems'
+
+    classpath = project.configurations.ruby
+    main = "org.jruby.Main"
+    environment = [GEM_HOME: "${projectDir}/scripts/gems"]
+    args = ["${projectDir}/scripts/generate-client.rb"]
+
 }

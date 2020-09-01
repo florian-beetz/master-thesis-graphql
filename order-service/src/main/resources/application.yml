@@ -1,3 +1,6 @@
+application:
+  baseUrl: ${ORDER_BASE_URL}
+
 graphql:
   servlet:
     mapping: /graphql
@@ -35,3 +38,13 @@ spring:
     password: ${ORDER_DB_PASSWORD}
   jpa:
     generate-ddl: true
+  
+keycloak:
+  realm: ma-graphql-shop
+  auth-server-url: ${ORDER_AUTH_URL:http://localhost/auth} # default value required for testing
+  ssl-required: none
+  resource: ${ORDER_AUTH_CLIENT}
+  credentials:
+    secret: ${ORDER_AUTH_SECRET}
+  use-resource-role-mappings: true
+  bearer-only: true

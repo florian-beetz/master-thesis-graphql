@@ -1,4 +1,4 @@
-package de.florianbeetz.ma.graphql.order.api;
+package de.florianbeetz.ma.graphql.order.api.model;
 
 import java.util.List;
 
