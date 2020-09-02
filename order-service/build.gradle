@@ -61,7 +61,7 @@ task downloadSchema {
 task downloadSchemaWin(type: Exec) {
     onlyIf { isFamily("windows") }
     workingDir "${projectDir}/scripts"
-    commandLine 'cmd', '/c', 'download-schema.bat'
+    commandLine 'powershell.exe', '.\\download-schema.ps1"'
 }
 
 task downloadSchemaUnix(type: Exec) {

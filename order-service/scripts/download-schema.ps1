@@ -1,1 +1,1 @@
-Invoke-RestMethod -Uri http://host.docker.internal:8080/gateway -Body "query {__schema {queryType {name}}}" -Method Post
+(Invoke-WebRequest -Uri http://host.docker.internal:8080/gateway -Method Post -Infile D:\Dokumente\Uni\master-thesis-graphql\order-service\scripts\introspection-query.json -ContentType 'application/json').Content | Out-File schema.json -Encoding UTF8

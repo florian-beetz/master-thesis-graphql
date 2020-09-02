@@ -34,12 +34,6 @@ public class ItemStockPosition extends AbstractResponse<ItemStockPosition> {
                     break;
                 }
 
-                case "id": {
-                    responseData.put(key, Long.parseLong(jsonAsString(field.getValue(), key)));
-
-                    break;
-                }
-
                 case "stock": {
                     responseData.put(key, new ItemStock(jsonAsObject(field.getValue(), key)));
 
@@ -70,15 +64,6 @@ public class ItemStockPosition extends AbstractResponse<ItemStockPosition> {
         return this;
     }
 
-    public Long getId() {
-        return (Long) get("id");
-    }
-
-    public ItemStockPosition setId(Long arg) {
-        optimisticData.put(getKey("id"), arg);
-        return this;
-    }
-
     public ItemStock getStock() {
         return (ItemStock) get("stock");
     }
@@ -91,8 +76,6 @@ public class ItemStockPosition extends AbstractResponse<ItemStockPosition> {
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "amount": return false;
-
-            case "id": return false;
 
             case "stock": return true;
 

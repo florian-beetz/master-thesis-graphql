@@ -1,1 +1,1 @@
-curl -X POST -d @introspection-query.graphql http://host.docker.internal:8080/gateway > schema.json
+curl -X POST -H "Content-Type: application/json" -d @introspection-query.json http://host.docker.internal:8080/gateway > schema.json

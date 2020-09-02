@@ -30,12 +30,6 @@ public class ItemStockPositionQuery extends Query<ItemStockPositionQuery> {
         return this;
     }
 
-    public ItemStockPositionQuery id() {
-        startField("id");
-
-        return this;
-    }
-
     public ItemStockPositionQuery stock(ItemStockQueryDefinition queryDef) {
         startField("stock");
 

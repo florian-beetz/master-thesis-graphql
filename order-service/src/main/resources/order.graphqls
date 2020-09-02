@@ -9,6 +9,7 @@ type ItemStock @key(fields: "id") @extends {
 type Order @key(fields: "id") {
     id: ID!
     positions: [OrderPosition]!
+    status: OrderStatus
 }
 
 enum OrderStatus {
@@ -52,6 +53,18 @@ type CreateOrderResponse implements ApiResponse {
     message: String
 }
 
+type UpdateStatusResponse implements ApiResponse {
+    previousStatus: OrderStatus
+    newStatus: OrderStatus
+    order: Order
+
+    code: String!
+    success: Boolean!
+    message: String
+}
+
 type Mutation {
     createOrder(positions: [OrderPositionInput]!): CreateOrderResponse
+
+    updateOrderStatus(orderId: ID!, status: OrderStatus!): UpdateStatusResponse
 }
