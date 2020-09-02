@@ -1,0 +1,1 @@
+curl -X POST -H "Content-Type: application/json" -d @introspection-query.json http://host.docker.internal:8080/gateway > schema.json
