@@ -1,0 +1,64 @@
+// Generated from graphql_java_gen gem
+
+package de.florianbeetz.ma.graphql.client;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.shopify.graphql.support.AbstractResponse;
+import com.shopify.graphql.support.Arguments;
+import com.shopify.graphql.support.Error;
+import com.shopify.graphql.support.Query;
+import com.shopify.graphql.support.SchemaViolationError;
+import com.shopify.graphql.support.TopLevelResponse;
+import com.shopify.graphql.support.Input;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class ItemStockQuery extends Query<ItemStockQuery> {
+    ItemStockQuery(StringBuilder _queryBuilder) {
+        super(_queryBuilder);
+    }
+
+    public ItemStockQuery available() {
+        startField("available");
+
+        return this;
+    }
+
+    public ItemStockQuery id() {
+        startField("id");
+
+        return this;
+    }
+
+    public ItemStockQuery inStock() {
+        startField("inStock");
+
+        return this;
+    }
+
+    public ItemStockQuery item(ItemQueryDefinition queryDef) {
+        startField("item");
+
+        _queryBuilder.append('{');
+        queryDef.define(new ItemQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
+    public ItemStockQuery warehouse(WarehouseQueryDefinition queryDef) {
+        startField("warehouse");
+
+        _queryBuilder.append('{');
+        queryDef.define(new WarehouseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+}

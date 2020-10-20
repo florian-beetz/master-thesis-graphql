@@ -1,0 +1,50 @@
+application:
+  baseUrl: ${PAYMENT_BASE_URL}
+
+graphql:
+  servlet:
+    mapping: /graphql
+    corsEnabled: false
+    exception-handlers-enabled: true
+
+graphiql:
+  mapping: /graphiql
+  endpoint:
+    graphql: /graphql
+    subscriptions: /subscriptions
+  subscriptions:
+    timeout: 30
+    reconnect: false
+  static:
+    base-path: /
+  enabled: true
+  pageTitle: Payment GraphiQL
+
+logging:
+  level:
+    .: INFO
+    de.florianbeetz: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+
+
+server:
+  servlet:
+    context-path: /payment
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${PAYMENT_DB_HOST}:${PAYMENT_DB_PORT}/${PAYMENT_DB_DATABASE}
+    username: ${PAYMENT_DB_USER}
+    password: ${PAYMENT_DB_PASSWORD}
+  jpa:
+    generate-ddl: true
+  
+keycloak:
+  realm: ma-graphql-shop
+  auth-server-url: ${PAYMENT_AUTH_URL:http://localhost/auth} # default value required for testing
+  ssl-required: none
+  resource: ${PAYMENT_AUTH_CLIENT}
+  credentials:
+    secret: ${PAYMENT_AUTH_SECRET}
+  use-resource-role-mappings: true
+  bearer-only: true

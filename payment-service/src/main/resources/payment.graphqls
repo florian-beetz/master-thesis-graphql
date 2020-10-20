@@ -1,0 +1,55 @@
+type Order @key(fields: "id") @extends {
+    id: ID! @external
+}
+
+enum PaymentStatus {
+    CREATED
+    PAYED
+    CANCELLED
+}
+
+type Payment @key(fields: "id") {
+    id: ID!
+
+    amount: Float!
+
+    order: Order!
+
+    reference: String!
+
+    status: PaymentStatus!
+}
+
+type Query {
+    payment(id: ID!): Payment
+}
+
+interface ApiResponse {
+    code: String!
+    success: Boolean!
+    message: String
+}
+
+type CreatePaymentResponse implements ApiResponse {
+    payment: Payment
+
+    code: String!
+    success: Boolean!
+    message: String
+}
+
+type UpdatePaymentStatusResponse implements ApiResponse {
+    newStatus: PaymentStatus
+    previousStatus: PaymentStatus
+    payment: Payment
+
+    code: String!
+    success: Boolean!
+    message: String
+}
+
+type Mutation {
+    createPayment(amount: Float!, orderId: ID!): CreatePaymentResponse!
+
+    updatePaymentStatus(paymentId: ID!, status: PaymentStatus!): UpdatePaymentStatusResponse!
+}
