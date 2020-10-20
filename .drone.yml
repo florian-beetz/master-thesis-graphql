@@ -27,18 +27,6 @@ steps:
       context: inventory-service
       dockerfile: inventory-service/Dockerfile
 
-  - name: "payment: build image"
-    image: plugins/docker
-    settings:
-      username: drone
-      password:
-        from_secret: registry_password
-      repo: registry.florianbeetz.de/ma-graphql/payment
-      auto_tag: true
-      registry: registry.florianbeetz.de
-      context: payment-service
-      dockerfile: payment-service/Dockerfile
-
   - name: "order: build image"
     image: plugins/docker
     settings:
@@ -50,3 +38,15 @@ steps:
       registry: registry.florianbeetz.de
       context: order-service
       dockerfile: order-service/Dockerfile
+
+  - name: "payment: build image"
+    image: plugins/docker
+    settings:
+      username: drone
+      password:
+        from_secret: registry_password
+      repo: registry.florianbeetz.de/ma-graphql/payment
+      auto_tag: true
+      registry: registry.florianbeetz.de
+      context: payment-service
+      dockerfile: payment-service/Dockerfile
