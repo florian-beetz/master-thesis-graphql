@@ -26,7 +26,7 @@ type ItemStock @key(fields: "id") {
 }
 
 type Query {
-    items(page: Int, size: Int): [Item]
+    items(page: Int, size: Int, ids: [ID!]): [Item]
     item(id: ID!): Item
 
     warehouses(page: Int, size: Int): [Warehouse]

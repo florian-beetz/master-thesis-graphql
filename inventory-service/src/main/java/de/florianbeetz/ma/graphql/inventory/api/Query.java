@@ -31,8 +31,12 @@ public class Query implements GraphQLQueryResolver {
         return itemService.lookupItem(id);
     }
 
-    public List<Item> items(Integer page, Integer size, final DataFetchingEnvironment dataFetchingEnvironment) {
-        return itemService.lookupItems(page, size);
+    public List<Item> items(Integer page, Integer size, List<Long> ids, final DataFetchingEnvironment dataFetchingEnvironment) {
+        if (ids == null) {
+            return itemService.lookupItems(page, size);
+        } else {
+            return itemService.lookupItems(ids);
+        }
     }
 
     @Secured("ROLE_inventory_admin")

@@ -3,6 +3,7 @@ package de.florianbeetz.ma.graphql.inventory.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import de.florianbeetz.ma.graphql.inventory.api.model.Item;
 import de.florianbeetz.ma.graphql.inventory.data.ItemEntity;
@@ -63,6 +64,16 @@ public class ItemService {
                              .stream()
                              .map(this::fromEntity)
                              .collect(Collectors.toList());
+    }
+
+    /**
+     * @param   ids the set of IDs to query.
+     * @return  the items with the given IDs.
+     */
+    public List<Item> lookupItems(List<Long> ids) {
+        return StreamSupport.stream(itemRepository.findAllById(ids).spliterator(), false)
+                            .map(this::fromEntity)
+                            .collect(Collectors.toList());
     }
 
     Item fromEntity(ItemEntity entity) {
