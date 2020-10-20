@@ -6,10 +6,15 @@ type ItemStock @key(fields: "id") @extends {
     id: ID! @external
 }
 
+type Payment @key(fields: "id") @extends {
+    id: ID! @external
+}
+
 type Order @key(fields: "id") {
     id: ID!
     positions: [OrderPosition]!
     status: OrderStatus
+    payment: Payment
 }
 
 enum OrderStatus {

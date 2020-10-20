@@ -2,22 +2,14 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.shopify.graphql.support.AbstractResponse;
-import com.shopify.graphql.support.Arguments;
-import com.shopify.graphql.support.Error;
-import com.shopify.graphql.support.Query;
-import com.shopify.graphql.support.SchemaViolationError;
-import com.shopify.graphql.support.TopLevelResponse;
-import com.shopify.graphql.support.Input;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.shopify.graphql.support.AbstractResponse;
+import com.shopify.graphql.support.SchemaViolationError;
 
 public class Order extends AbstractResponse<Order> {
     public Order() {
@@ -34,6 +26,17 @@ public class Order extends AbstractResponse<Order> {
                     break;
                 }
 
+                case "payment": {
+                    Payment optional1 = null;
+                    if (!field.getValue().isJsonNull()) {
+                        optional1 = new Payment(jsonAsObject(field.getValue(), key));
+                    }
+
+                    responseData.put(key, optional1);
+
+                    break;
+                }
+
                 case "positions": {
                     List<OrderPosition> list1 = new ArrayList<>();
                     for (JsonElement element1 : jsonAsArray(field.getValue(), key)) {
@@ -46,6 +49,17 @@ public class Order extends AbstractResponse<Order> {
                     }
 
                     responseData.put(key, list1);
+
+                    break;
+                }
+
+                case "status": {
+                    OrderStatus optional1 = null;
+                    if (!field.getValue().isJsonNull()) {
+                        optional1 = OrderStatus.fromGraphQl(jsonAsString(field.getValue(), key));
+                    }
+
+                    responseData.put(key, optional1);
 
                     break;
                 }
@@ -74,6 +88,15 @@ public class Order extends AbstractResponse<Order> {
         return this;
     }
 
+    public Payment getPayment() {
+        return (Payment) get("payment");
+    }
+
+    public Order setPayment(Payment arg) {
+        optimisticData.put(getKey("payment"), arg);
+        return this;
+    }
+
     public List<OrderPosition> getPositions() {
         return (List<OrderPosition>) get("positions");
     }
@@ -83,11 +106,24 @@ public class Order extends AbstractResponse<Order> {
         return this;
     }
 
+    public OrderStatus getStatus() {
+        return (OrderStatus) get("status");
+    }
+
+    public Order setStatus(OrderStatus arg) {
+        optimisticData.put(getKey("status"), arg);
+        return this;
+    }
+
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "id": return false;
 
+            case "payment": return true;
+
             case "positions": return true;
+
+            case "status": return false;
 
             default: return false;
         }

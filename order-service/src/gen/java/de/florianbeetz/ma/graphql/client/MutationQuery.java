@@ -2,22 +2,10 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.shopify.graphql.support.AbstractResponse;
-import com.shopify.graphql.support.Arguments;
-import com.shopify.graphql.support.Error;
-import com.shopify.graphql.support.Query;
-import com.shopify.graphql.support.SchemaViolationError;
-import com.shopify.graphql.support.TopLevelResponse;
-import com.shopify.graphql.support.Input;
-
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import com.shopify.graphql.support.Arguments;
+import com.shopify.graphql.support.Query;
 
 public class MutationQuery extends Query<MutationQuery> {
     MutationQuery(StringBuilder _queryBuilder) {
@@ -178,6 +166,60 @@ public class MutationQuery extends Query<MutationQuery> {
 
         _queryBuilder.append('{');
         queryDef.define(new CreateOrderResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
+    public MutationQuery updateOrderStatus(Long orderId, OrderStatus status, UpdateStatusResponseQueryDefinition queryDef) {
+        startField("updateOrderStatus");
+
+        _queryBuilder.append("(orderId:");
+        Query.appendQuotedString(_queryBuilder, orderId.toString());
+
+        _queryBuilder.append(",status:");
+        _queryBuilder.append(status.toString());
+
+        _queryBuilder.append(')');
+
+        _queryBuilder.append('{');
+        queryDef.define(new UpdateStatusResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
+    public MutationQuery createPayment(double amount, Long orderId, CreatePaymentResponseQueryDefinition queryDef) {
+        startField("createPayment");
+
+        _queryBuilder.append("(amount:");
+        _queryBuilder.append(amount);
+
+        _queryBuilder.append(",orderId:");
+        Query.appendQuotedString(_queryBuilder, orderId.toString());
+
+        _queryBuilder.append(')');
+
+        _queryBuilder.append('{');
+        queryDef.define(new CreatePaymentResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
+    public MutationQuery updatePaymentStatus(Long paymentId, PaymentStatus status, UpdatePaymentStatusResponseQueryDefinition queryDef) {
+        startField("updatePaymentStatus");
+
+        _queryBuilder.append("(paymentId:");
+        Query.appendQuotedString(_queryBuilder, paymentId.toString());
+
+        _queryBuilder.append(",status:");
+        _queryBuilder.append(status.toString());
+
+        _queryBuilder.append(')');
+
+        _queryBuilder.append('{');
+        queryDef.define(new UpdatePaymentStatusResponseQuery(_queryBuilder));
         _queryBuilder.append('}');
 
         return this;

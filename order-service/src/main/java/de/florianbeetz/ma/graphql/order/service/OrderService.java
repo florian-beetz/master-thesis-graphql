@@ -1,7 +1,9 @@
 package de.florianbeetz.ma.graphql.order.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.florianbeetz.ma.graphql.order.api.model.Item;
@@ -9,10 +11,12 @@ import de.florianbeetz.ma.graphql.order.api.model.ItemStock;
 import de.florianbeetz.ma.graphql.order.api.model.ItemStockPosition;
 import de.florianbeetz.ma.graphql.order.api.model.Order;
 import de.florianbeetz.ma.graphql.order.api.model.OrderPosition;
+import de.florianbeetz.ma.graphql.order.api.model.Payment;
 import de.florianbeetz.ma.graphql.order.data.OrderEntity;
 import de.florianbeetz.ma.graphql.order.data.OrderPositionEntity;
 import de.florianbeetz.ma.graphql.order.data.OrderPositionRepository;
 import de.florianbeetz.ma.graphql.order.data.OrderRepository;
+import de.florianbeetz.ma.graphql.order.service.model.ItemPrice;
 import de.florianbeetz.ma.graphql.order.service.model.OrderStatus;
 import de.florianbeetz.ma.graphql.order.service.model.ReservationPosition;
 import de.florianbeetz.ma.graphql.order.service.model.StatusUpdate;
@@ -82,6 +86,40 @@ public class OrderService {
         return new StatusUpdate(previousStatus, status, fromEntity(savedEntity));
     }
 
+    public List<Order> getOrdersWithoutPayment() {
+        return orderRepository.findAllByPaymentIdNull().stream()
+                       .map(this::fromEntity)
+                       .collect(Collectors.toList());
+    }
+
+    public double getOrderTotal(Order order) throws ServiceException {
+        Map<Long, Long> itemAmounts = new HashMap<>();
+        List<Long> itemIds = new ArrayList<>();
+        for (val position : order.getPositions()) {
+            itemAmounts.put(position.getItem().getId(), position.getAmount());
+            itemIds.add(position.getItem().getId());
+        }
+
+        // fetch item prices
+        List<ItemPrice> itemPrices = inventoryService.getItemPrices(itemIds);
+
+        double total = 0;
+        for (val itemPrice : itemPrices) {
+            total += itemPrice.getPrice() * itemAmounts.get(itemPrice.getItemId());
+        }
+
+        // TODO: add shipping cost
+
+        return total;
+    }
+    
+    public void updatePaymentId(Order order, long paymentId) throws ServiceException {
+        val orderEntity = orderRepository.findById(order.getId())
+                                         .orElseThrow(() -> new ServiceException(1, "Order does not exist."));
+        orderEntity.setPaymentId(paymentId);
+        orderRepository.save(orderEntity);
+    }
+
     private Order fromEntity(OrderEntity orderEntity) {
         return fromEntity(orderEntity, null);
     }
@@ -104,6 +142,9 @@ public class OrderService {
                                                                       .collect(Collectors.toList())))
                                                              .collect(Collectors.toList());
 
-        return new Order(orderEntity.getId(), orderPositions, de.florianbeetz.ma.graphql.order.api.model.OrderStatus.from(orderEntity.getStatus()));
+        return new Order(orderEntity.getId(),
+                orderPositions,
+                de.florianbeetz.ma.graphql.order.api.model.OrderStatus.from(orderEntity.getStatus()),
+                orderEntity.getPaymentId() == null ? null : new Payment(orderEntity.getPaymentId()));
     }
 }

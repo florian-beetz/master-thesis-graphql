@@ -2,22 +2,12 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.Map;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.shopify.graphql.support.AbstractResponse;
-import com.shopify.graphql.support.Arguments;
-import com.shopify.graphql.support.Error;
-import com.shopify.graphql.support.Query;
 import com.shopify.graphql.support.SchemaViolationError;
-import com.shopify.graphql.support.TopLevelResponse;
-import com.shopify.graphql.support.Input;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class Mutation extends AbstractResponse<Mutation> {
     public Mutation() {
@@ -85,6 +75,29 @@ public class Mutation extends AbstractResponse<Mutation> {
                     }
 
                     responseData.put(key, optional1);
+
+                    break;
+                }
+
+                case "updateOrderStatus": {
+                    UpdateStatusResponse optional1 = null;
+                    if (!field.getValue().isJsonNull()) {
+                        optional1 = new UpdateStatusResponse(jsonAsObject(field.getValue(), key));
+                    }
+
+                    responseData.put(key, optional1);
+
+                    break;
+                }
+
+                case "createPayment": {
+                    responseData.put(key, new CreatePaymentResponse(jsonAsObject(field.getValue(), key)));
+
+                    break;
+                }
+
+                case "updatePaymentStatus": {
+                    responseData.put(key, new UpdatePaymentStatusResponse(jsonAsObject(field.getValue(), key)));
 
                     break;
                 }
@@ -158,6 +171,33 @@ public class Mutation extends AbstractResponse<Mutation> {
         return this;
     }
 
+    public UpdateStatusResponse getUpdateOrderStatus() {
+        return (UpdateStatusResponse) get("updateOrderStatus");
+    }
+
+    public Mutation setUpdateOrderStatus(UpdateStatusResponse arg) {
+        optimisticData.put(getKey("updateOrderStatus"), arg);
+        return this;
+    }
+
+    public CreatePaymentResponse getCreatePayment() {
+        return (CreatePaymentResponse) get("createPayment");
+    }
+
+    public Mutation setCreatePayment(CreatePaymentResponse arg) {
+        optimisticData.put(getKey("createPayment"), arg);
+        return this;
+    }
+
+    public UpdatePaymentStatusResponse getUpdatePaymentStatus() {
+        return (UpdatePaymentStatusResponse) get("updatePaymentStatus");
+    }
+
+    public Mutation setUpdatePaymentStatus(UpdatePaymentStatusResponse arg) {
+        optimisticData.put(getKey("updatePaymentStatus"), arg);
+        return this;
+    }
+
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "bookOutItems": return true;
@@ -171,6 +211,12 @@ public class Mutation extends AbstractResponse<Mutation> {
             case "reserveItems": return true;
 
             case "createOrder": return true;
+
+            case "updateOrderStatus": return true;
+
+            case "createPayment": return true;
+
+            case "updatePaymentStatus": return true;
 
             default: return false;
         }

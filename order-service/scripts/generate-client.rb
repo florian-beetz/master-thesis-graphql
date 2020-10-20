@@ -2,7 +2,7 @@ require 'graphql_java_gen'
 require 'graphql_schema'
 require 'json'
 
-introspection_result = File.read("scripts/schema.json")
+introspection_result = File.read("scripts/schema.json", :encoding => 'utf-8')
 schema = GraphQLSchema.new(JSON.parse(introspection_result))
 
 GraphQLJavaGen.new(schema,

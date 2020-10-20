@@ -8,6 +8,7 @@ import com.shopify.graphql.support.Error;
 import com.shopify.graphql.support.SchemaViolationError;
 import de.florianbeetz.ma.graphql.client.BookOutInput;
 import de.florianbeetz.ma.graphql.client.BookOutResponse;
+import de.florianbeetz.ma.graphql.client.CreatePaymentResponse;
 import de.florianbeetz.ma.graphql.client.ItemStockQuery;
 import de.florianbeetz.ma.graphql.client.Mutation;
 import de.florianbeetz.ma.graphql.client.MutationQuery;
@@ -18,9 +19,9 @@ import de.florianbeetz.ma.graphql.client.QueryType;
 import de.florianbeetz.ma.graphql.client.QueryTypeQuery;
 import de.florianbeetz.ma.graphql.client.ReservationResponse;
 import de.florianbeetz.ma.graphql.client.StockPosition;
+import de.florianbeetz.ma.graphql.order.service.model.ItemPrice;
 import de.florianbeetz.ma.graphql.order.service.model.ReservationPosition;
 import lombok.val;
-import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +88,46 @@ public class ShopApiService {
         if (!bookOutResponse.getSuccess()) {
             throw new ApiException("Failed to book out items: " + bookOutResponse.getMessage() + " (code=" + bookOutResponse.getCode() + ")");
         }
+    }
+
+    /**
+     * Creates a new payment with the given amount for the given order id.
+     *
+     * @param amount
+     * @param orderId
+     *
+     * @return the id of the new payment.
+     *
+     * @throws ApiException if the payment could not be created.
+     */
+    public long createPayment(double amount, long orderId) throws ApiException {
+        @SuppressWarnings("Convert2MethodRef")
+        MutationQuery query = Operations.mutation(mutation -> mutation
+                .createPayment(amount, orderId, res -> res
+                        .code()
+                        .message()
+                        .success()
+                        .payment(payment -> payment
+                                .id())));
+
+        CreatePaymentResponse createPaymentResponse = mutate(query).getCreatePayment();
+        if (!createPaymentResponse.getSuccess()) {
+            throw new ApiException("Failed to create payment: " + createPaymentResponse.getMessage() + " (code=" + createPaymentResponse.getCode() + ")");
+        }
+
+        return createPaymentResponse.getPayment().getId();
+    }
+
+    public List<ItemPrice> getAllItemPrices(List<Long> itemIds) throws ApiException {
+        val query = Operations.query(q -> q.items(args -> args
+                        .ids(itemIds),
+                itemQ -> itemQ
+                        .id()
+                        .price()));
+
+        return this.query(query).getItems().stream()
+                .map(i -> new ItemPrice(i.getId(), i.getPrice()))
+                .collect(Collectors.toList());
     }
 
     private QueryType query(QueryTypeQuery query) throws ApiException {

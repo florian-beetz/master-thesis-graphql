@@ -2,22 +2,14 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.shopify.graphql.support.AbstractResponse;
-import com.shopify.graphql.support.Arguments;
-import com.shopify.graphql.support.Error;
-import com.shopify.graphql.support.Query;
-import com.shopify.graphql.support.SchemaViolationError;
-import com.shopify.graphql.support.TopLevelResponse;
-import com.shopify.graphql.support.Input;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.shopify.graphql.support.AbstractResponse;
+import com.shopify.graphql.support.SchemaViolationError;
 
 public class QueryType extends AbstractResponse<QueryType> {
     public QueryType() {
@@ -103,6 +95,17 @@ public class QueryType extends AbstractResponse<QueryType> {
                     break;
                 }
 
+                case "payment": {
+                    Payment optional1 = null;
+                    if (!field.getValue().isJsonNull()) {
+                        optional1 = new Payment(jsonAsObject(field.getValue(), key));
+                    }
+
+                    responseData.put(key, optional1);
+
+                    break;
+                }
+
                 case "__typename": {
                     responseData.put(key, jsonAsString(field.getValue(), key));
                     break;
@@ -163,6 +166,15 @@ public class QueryType extends AbstractResponse<QueryType> {
         return this;
     }
 
+    public Payment getPayment() {
+        return (Payment) get("payment");
+    }
+
+    public QueryType setPayment(Payment arg) {
+        optimisticData.put(getKey("payment"), arg);
+        return this;
+    }
+
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "item": return true;
@@ -174,6 +186,8 @@ public class QueryType extends AbstractResponse<QueryType> {
             case "warehouses": return true;
 
             case "order": return true;
+
+            case "payment": return true;
 
             default: return false;
         }

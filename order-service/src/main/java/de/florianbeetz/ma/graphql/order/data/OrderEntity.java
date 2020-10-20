@@ -31,7 +31,10 @@ public class OrderEntity {
     @Column(nullable = false)
     private String status;
 
+    private Long shipmentId;
+    private Long paymentId;
+
     public OrderEntity() {
-        this(null, new ArrayList<>(), OrderStatus.CREATED.name());
+        this(null, new ArrayList<>(), OrderStatus.CREATED.name(), null, null);
     }
 }

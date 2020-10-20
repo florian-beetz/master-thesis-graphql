@@ -2,22 +2,10 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.shopify.graphql.support.AbstractResponse;
-import com.shopify.graphql.support.Arguments;
-import com.shopify.graphql.support.Error;
-import com.shopify.graphql.support.Query;
-import com.shopify.graphql.support.SchemaViolationError;
-import com.shopify.graphql.support.TopLevelResponse;
-import com.shopify.graphql.support.Input;
-
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import com.shopify.graphql.support.Arguments;
+import com.shopify.graphql.support.Query;
 
 public class QueryTypeQuery extends Query<QueryTypeQuery> {
     QueryTypeQuery(StringBuilder _queryBuilder) {
@@ -42,6 +30,23 @@ public class QueryTypeQuery extends Query<QueryTypeQuery> {
     public class ItemsArguments extends Arguments {
         ItemsArguments(StringBuilder _queryBuilder) {
             super(_queryBuilder, true);
+        }
+
+        public ItemsArguments ids(List<Long> value) {
+            if (value != null) {
+                startArgument("ids");
+                _queryBuilder.append('[');
+                {
+                    String listSeperator1 = "";
+                    for (Long item1 : value) {
+                        _queryBuilder.append(listSeperator1);
+                        listSeperator1 = ",";
+                        Query.appendQuotedString(_queryBuilder, item1.toString());
+                    }
+                }
+                _queryBuilder.append(']');
+            }
+            return this;
         }
 
         public ItemsArguments page(Long value) {
@@ -152,6 +157,21 @@ public class QueryTypeQuery extends Query<QueryTypeQuery> {
 
         _queryBuilder.append('{');
         queryDef.define(new OrderQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
+    public QueryTypeQuery payment(Long id, PaymentQueryDefinition queryDef) {
+        startField("payment");
+
+        _queryBuilder.append("(id:");
+        Query.appendQuotedString(_queryBuilder, id.toString());
+
+        _queryBuilder.append(')');
+
+        _queryBuilder.append('{');
+        queryDef.define(new PaymentQuery(_queryBuilder));
         _queryBuilder.append('}');
 
         return this;

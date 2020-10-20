@@ -9,11 +9,11 @@ import com.google.gson.JsonObject;
 import com.shopify.graphql.support.AbstractResponse;
 import com.shopify.graphql.support.SchemaViolationError;
 
-public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> implements ApiResponse {
-    public UnknownApiResponse() {
+public class CreatePaymentResponse extends AbstractResponse<CreatePaymentResponse> implements ApiResponse {
+    public CreatePaymentResponse() {
     }
 
-    public UnknownApiResponse(JsonObject fields) throws SchemaViolationError {
+    public CreatePaymentResponse(JsonObject fields) throws SchemaViolationError {
         for (Map.Entry<String, JsonElement> field : fields.entrySet()) {
             String key = field.getKey();
             String fieldName = getFieldName(key);
@@ -28,6 +28,17 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
                     String optional1 = null;
                     if (!field.getValue().isJsonNull()) {
                         optional1 = jsonAsString(field.getValue(), key);
+                    }
+
+                    responseData.put(key, optional1);
+
+                    break;
+                }
+
+                case "payment": {
+                    Payment optional1 = null;
+                    if (!field.getValue().isJsonNull()) {
+                        optional1 = new Payment(jsonAsObject(field.getValue(), key));
                     }
 
                     responseData.put(key, optional1);
@@ -52,48 +63,15 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
         }
     }
 
-    public static ApiResponse create(JsonObject fields) throws SchemaViolationError {
-        String typeName = fields.getAsJsonPrimitive("__typename").getAsString();
-        switch (typeName) {
-            case "BookOutResponse": {
-                return new BookOutResponse(fields);
-            }
-
-            case "CreateOrderResponse": {
-                return new CreateOrderResponse(fields);
-            }
-
-            case "CreatePaymentResponse": {
-                return new CreatePaymentResponse(fields);
-            }
-
-            case "ReservationResponse": {
-                return new ReservationResponse(fields);
-            }
-
-            case "UpdatePaymentStatusResponse": {
-                return new UpdatePaymentStatusResponse(fields);
-            }
-
-            case "UpdateStatusResponse": {
-                return new UpdateStatusResponse(fields);
-            }
-
-            default: {
-                return new UnknownApiResponse(fields);
-            }
-        }
-    }
-
     public String getGraphQlTypeName() {
-        return (String) get("__typename");
+        return "CreatePaymentResponse";
     }
 
     public String getCode() {
         return (String) get("code");
     }
 
-    public UnknownApiResponse setCode(String arg) {
+    public CreatePaymentResponse setCode(String arg) {
         optimisticData.put(getKey("code"), arg);
         return this;
     }
@@ -102,8 +80,17 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
         return (String) get("message");
     }
 
-    public UnknownApiResponse setMessage(String arg) {
+    public CreatePaymentResponse setMessage(String arg) {
         optimisticData.put(getKey("message"), arg);
+        return this;
+    }
+
+    public Payment getPayment() {
+        return (Payment) get("payment");
+    }
+
+    public CreatePaymentResponse setPayment(Payment arg) {
+        optimisticData.put(getKey("payment"), arg);
         return this;
     }
 
@@ -111,7 +98,7 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
         return (Boolean) get("success");
     }
 
-    public UnknownApiResponse setSuccess(Boolean arg) {
+    public CreatePaymentResponse setSuccess(Boolean arg) {
         optimisticData.put(getKey("success"), arg);
         return this;
     }
@@ -121,6 +108,8 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
             case "code": return false;
 
             case "message": return false;
+
+            case "payment": return true;
 
             case "success": return false;
 
