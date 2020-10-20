@@ -1,0 +1,52 @@
+kind: pipeline
+name: default
+type: docker
+
+steps:
+  - name: "gateway: build image"
+    image: plugins/docker
+    settings:
+      username: drone
+      password:
+        from_secret: registry_password
+      repo: registry.florianbeetz.de/ma-graphql/gateway
+      auto_tag: true
+      registry: registry.florianbeetz.de
+      context: graphql-gateway
+      dockerfile: graphql-gateway/Dockerfile
+
+  - name: "inventory: build image"
+    image: plugins/docker
+    settings:
+      username: drone
+      password:
+        from_secret: registry_password
+      repo: registry.florianbeetz.de/ma-graphql/inventory
+      auto_tag: true
+      registry: registry.florianbeetz.de
+      context: inventory-service
+      dockerfile: inventory-service/Dockerfile
+
+  - name: "order: build image"
+    image: plugins/docker
+    settings:
+      username: drone
+      password:
+        from_secret: registry_password
+      repo: registry.florianbeetz.de/ma-graphql/order
+      auto_tag: true
+      registry: registry.florianbeetz.de
+      context: order-service
+      dockerfile: order-service/Dockerfile
+
+  - name: "payment: build image"
+    image: plugins/docker
+    settings:
+      username: drone
+      password:
+        from_secret: registry_password
+      repo: registry.florianbeetz.de/ma-graphql/payment
+      auto_tag: true
+      registry: registry.florianbeetz.de
+      context: payment-service
+      dockerfile: payment-service/Dockerfile
