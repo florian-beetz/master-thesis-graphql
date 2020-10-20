@@ -23,10 +23,12 @@ services:
     environment:
       - INVENTORY_HOST=http://host.docker.internal:8080/inventory/graphql
       - ORDER_HOST=http://host.docker.internal:8080/order/graphql
+      - PAYMENT_HOST=http://host.docker.internal:8080/payment/graphql
     depends_on:
       - traefik
       - inventory
       - orders
+      - payment
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gateway.rule=PathPrefix(`/gateway/`, `/gateway`)"
@@ -100,4 +102,31 @@ services:
       - 5432:5432
     environment:
       - POSTGRES_PASSWORD=${ORDER_DB_PASSWORD}
+    healthcheck: *pg_health
+    
+  payment:
+    build: ./payment-service
+    environment:
+      - PAYMENT_DB_HOST=payment_db
+      - PAYMENT_DB_PORT=5432
+      - PAYMENT_DB_DATABASE=postgres
+      - PAYMENT_DB_USER=postgres
+      - PAYMENT_DB_PASSWORD=${PAYMENT_DB_PASSWORD}
+      - PAYMENT_AUTH_URL=${ROOT_URL}/auth
+      - PAYMENT_AUTH_CLIENT=${PAYMENT_CLIENT_ID}
+      - PAYMENT_AUTH_SECRET=${PAYMENT_CLIENT_SECRET}
+      - PAYMENT_BASE_URL=${ROOT_URL}/gateway
+    depends_on:
+      - payment_db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.payment.rule=PathPrefix(`/payment/`, `/payment`)"
+      - "traefik.http.routers.payment.entrypoints=web"
+
+  payment_db:
+    image: postgres
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_PASSWORD=${PAYMENT_DB_PASSWORD}
     healthcheck: *pg_health
