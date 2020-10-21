@@ -1,0 +1,2 @@
+(Invoke-WebRequest -Uri http://host.docker.internal:8080/gateway -Method Post -Infile D:\Dokumente\Uni\master-thesis-graphql\order-service\scripts\introspection-query.json -ContentType 'application/json').Content | Out-File schema.json -Encoding UTF8
+(Get-Content -path schema.json -Raw).replace('Query','QueryType') | Set-Content -Path schema.json # rename Query type to generate valid code

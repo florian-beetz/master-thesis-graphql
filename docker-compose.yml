@@ -20,6 +20,7 @@ services:
 
   gateway:
     build: ./graphql-gateway
+    image: registry.florianbeetz.de/ma-graphql/gateway
     environment:
       - INVENTORY_HOST=http://host.docker.internal:8080/inventory/graphql
       - ORDER_HOST=http://host.docker.internal:8080/order/graphql
@@ -49,6 +50,7 @@ services:
         
   inventory:
     build: ./inventory-service
+    image: registry.florianbeetz.de/ma-graphql/inventory
     environment:
       - INVENTORY_DB_HOST=inventory_db
       - INVENTORY_DB_PORT=5432
@@ -79,6 +81,7 @@ services:
 
   orders:
     build: ./order-service
+    image: registry.florianbeetz.de/ma-graphql/order
     environment:
       - ORDER_DB_HOST=order_db
       - ORDER_DB_PORT=5432
@@ -103,9 +106,10 @@ services:
     environment:
       - POSTGRES_PASSWORD=${ORDER_DB_PASSWORD}
     healthcheck: *pg_health
-    
+
   payment:
     build: ./payment-service
+    image: registry.florianbeetz.de/ma-graphql/payment
     environment:
       - PAYMENT_DB_HOST=payment_db
       - PAYMENT_DB_PORT=5432
@@ -129,4 +133,33 @@ services:
       - 5433:5432
     environment:
       - POSTGRES_PASSWORD=${PAYMENT_DB_PASSWORD}
+    healthcheck: *pg_health
+
+
+  shipping:
+    build: ./shipping-service
+    image: registry.florianbeetz.de/ma-graphql/shipping
+    environment:
+      - SHIPPING_DB_HOST=payment_db
+      - SHIPPING_DB_PORT=5432
+      - SHIPPING_DB_DATABASE=postgres
+      - SHIPPING_DB_USER=postgres
+      - SHIPPING_DB_PASSWORD=${PAYMENT_DB_PASSWORD}
+      - SHIPPING_AUTH_URL=${ROOT_URL}/auth
+      - SHIPPING_AUTH_CLIENT=${PAYMENT_CLIENT_ID}
+      - SHIPPING_AUTH_SECRET=${PAYMENT_CLIENT_SECRET}
+      - SHIPPING_BASE_URL=${ROOT_URL}/gateway
+    depends_on:
+      - shipping_db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shipping.rule=PathPrefix(`/shipping/`, `/shipping`)"
+      - "traefik.http.routers.shipping.entrypoints=web"
+
+  shipping_db:
+    image: postgres
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_PASSWORD=${SHIPPING_DB_PASSWORD}
     healthcheck: *pg_health

@@ -1,0 +1,50 @@
+application:
+  baseUrl: ${SHIPPING_BASE_URL}
+
+graphql:
+  servlet:
+    mapping: /graphql
+    corsEnabled: false
+    exception-handlers-enabled: true
+
+graphiql:
+  mapping: /graphiql
+  endpoint:
+    graphql: /graphql
+    subscriptions: /subscriptions
+  subscriptions:
+    timeout: 30
+    reconnect: false
+  static:
+    base-path: /
+  enabled: true
+  pageTitle: Shipping GraphiQL
+
+logging:
+  level:
+    .: INFO
+    de.florianbeetz: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+
+
+server:
+  servlet:
+    context-path: /shipping
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${SHIPPING_DB_HOST}:${SHIPPING_DB_PORT}/${SHIPPING_DB_DATABASE}
+    username: ${SHIPPING_DB_USER}
+    password: ${SHIPPING_DB_PASSWORD}
+  jpa:
+    generate-ddl: true
+  
+keycloak:
+  realm: ma-graphql-shop
+  auth-server-url: ${SHIPPING_AUTH_URL:http://localhost/auth} # default value required for testing
+  ssl-required: none
+  resource: ${SHIPPING_AUTH_CLIENT}
+  credentials:
+    secret: ${SHIPPING_AUTH_SECRET}
+  use-resource-role-mappings: true
+  bearer-only: true

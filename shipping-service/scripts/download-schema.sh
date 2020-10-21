@@ -1,0 +1,2 @@
+curl -X POST -H "Content-Type: application/json" -d @introspection-query.json http://host.docker.internal:8080/gateway > schema.json
+sed -i 's/Query/QueryType/g' schema.json # rename Query type to generate valid code
