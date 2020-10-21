@@ -16,4 +16,6 @@ public interface OrderRepository extends CrudRepository<OrderEntity, Long> {
     @Query("select entity from OrderEntity entity where entity.status=:status and (entity.shipmentId is not null or entity.paymentId is not null) ")
     List<OrderEntity> findAllByStatusAndHasSubResourceIds(String status);
 
+    List<OrderEntity> findAllByStatusAndItemsBookedOutIsFalse(String status);
+
 }

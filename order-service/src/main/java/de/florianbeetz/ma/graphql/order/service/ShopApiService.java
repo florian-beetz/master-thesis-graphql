@@ -220,6 +220,20 @@ public class ShopApiService {
         }
     }
 
+    public double getShipmentCost(long shipmentId) throws ApiException {
+        @SuppressWarnings("Convert2MethodRef")
+        QueryTypeQuery query = Operations.query(q -> q
+                .shipment(shipmentId, shipment -> shipment
+                        .cost()));
+
+        val shipment = this.query(query).getShipment();
+        if (shipment == null) {
+            throw new ApiException("Shipment does not exist.");
+        }
+
+        return shipment.getCost();
+    }
+
     private QueryType query(QueryTypeQuery query) throws ApiException {
         try {
             val response = exchangeQuery(query.toString());

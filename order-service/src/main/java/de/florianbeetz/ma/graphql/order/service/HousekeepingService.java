@@ -1,5 +1,7 @@
 package de.florianbeetz.ma.graphql.order.service;
 
+import java.util.Map;
+
 import de.florianbeetz.ma.graphql.client.PaymentStatus;
 import de.florianbeetz.ma.graphql.client.ShippingStatus;
 import de.florianbeetz.ma.graphql.order.api.model.Order;
@@ -101,6 +103,26 @@ public class HousekeepingService {
         }
 
         log.info("Cancelled {} shipments and {} payments.", cancelledShipments, cancelledPayments);
+    }
+
+    @Scheduled(cron = "${application.housekeeping.inventory-update}")
+    public void updateInventory() {
+        log.info("Booking out items of shipped orders...");
+        int updated = 0;
+
+        val orders = orderService.getUpdatableShippedOrders();
+        for (val order : orders) {
+            try {
+                Map<Long, Long> reservationPositions = orderService.getReservationPositions(order);
+                shopApiService.bookOutItems(reservationPositions);
+                orderService.setItemsBookedOut(order);
+                updated++;
+            } catch (Exception e) {
+                log.error("Failed to book out items of order id={}", order.getId(), e);
+            }
+        }
+
+        log.info("Booked out items of {} orders.", updated);
     }
 
     private int cancelShipment(int cancelledShipments, Order order) {

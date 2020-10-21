@@ -34,12 +34,14 @@ public class OrderService {
     private final InventoryService inventoryService;
     private final OrderRepository orderRepository;
     private final OrderPositionRepository orderPositionRepository;
+    private final ShopApiService shopApiService;
 
     @Autowired
-    public OrderService(InventoryService inventoryService, OrderRepository orderRepository, OrderPositionRepository orderPositionRepository) {
+    public OrderService(InventoryService inventoryService, OrderRepository orderRepository, OrderPositionRepository orderPositionRepository, ShopApiService shopApiService) {
         this.inventoryService = inventoryService;
         this.orderRepository = orderRepository;
         this.orderPositionRepository = orderPositionRepository;
+        this.shopApiService = shopApiService;
     }
 
     public Order lookupOrder(long id) {
@@ -66,10 +68,6 @@ public class OrderService {
         orderPositionRepository.saveAll(positionEntities);
 
         log.debug("Saved order: {}", savedOrder);
-
-        // TODO: create shipment and payment
-
-
         return fromEntity(savedOrder, positionEntities);
     }
 
@@ -115,7 +113,11 @@ public class OrderService {
             total += itemPrice.getPrice() * itemAmounts.get(itemPrice.getItemId());
         }
 
-        // TODO: add shipping cost
+        try {
+            total += shopApiService.getShipmentCost(order.getShipment().getId());
+        } catch (ApiException e) {
+            throw new ServiceException(20, "Failed to calculate shipping cost.", e);
+        }
 
         return total;
     }
@@ -153,6 +155,23 @@ public class OrderService {
     public void removeShipment(Order order) throws ServiceException {
         val entity = loadById(order.getId());
         entity.setShipmentId(null);
+        orderRepository.save(entity);
+    }
+
+    public List<Order> getUpdatableShippedOrders() {
+        return orderRepository.findAllByStatusAndItemsBookedOutIsFalse(OrderStatus.SHIPPED.name()).stream()
+                .map(this::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    Map<Long, Long> getReservationPositions(Order order) {
+        return order.getPositions().stream().flatMap(pos -> pos.getStock().stream())
+                .collect(Collectors.toMap(pos -> pos.getStock().getId(), ItemStockPosition::getAmount));
+    }
+
+    void setItemsBookedOut(Order order) throws ServiceException {
+        val entity = loadById(order.getId());
+        entity.setItemsBookedOut(true);
         orderRepository.save(entity);
     }
 

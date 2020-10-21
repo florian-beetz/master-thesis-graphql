@@ -5,6 +5,7 @@ application:
     shipment-create: "0 * * * * *" # every minute
     shipment-update: "0 * * * * *" # every minute
     dangling-subresources: "0 * * * * *" # every minute
+    inventory-update: "0 * * * * *" # every minute
 
 graphql:
   servlet:
