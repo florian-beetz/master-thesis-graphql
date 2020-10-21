@@ -55,11 +55,11 @@ steps:
       dockerfile: payment-service/Dockerfile
 
   - name: "shipping: build image"
-  <<: *docker_commons
-  settings:
-    repo: registry.florianbeetz.de/ma-graphql/shipping
-    context: shipping-service
-    dockerfile: shipping-service/Dockerfile
+    <<: *docker_commons
+    settings:
+      repo: registry.florianbeetz.de/ma-graphql/shipping
+      context: shipping-service
+      dockerfile: shipping-service/Dockerfile
 
 volumes:
   - name: cache
