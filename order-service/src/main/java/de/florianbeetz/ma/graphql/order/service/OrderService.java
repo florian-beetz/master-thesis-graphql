@@ -132,6 +132,30 @@ public class OrderService {
         orderRepository.save(orderEntity);
     }
 
+    public List<Order> getPayedOrders() {
+        return orderRepository.findAllByStatus(OrderStatus.PAYMENT_RECEIVED.name()).stream()
+                .map(this::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<Order> getUpdatableCancelledOrders() {
+        return orderRepository.findAllByStatusAndHasSubResourceIds(OrderStatus.CANCELED.name()).stream()
+                .map(this::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public void removePayment(Order order) throws ServiceException {
+        val entity = loadById(order.getId());
+        entity.setPaymentId(null);
+        orderRepository.save(entity);
+    }
+
+    public void removeShipment(Order order) throws ServiceException {
+        val entity = loadById(order.getId());
+        entity.setShipmentId(null);
+        orderRepository.save(entity);
+    }
+
     private OrderEntity loadById(long id) throws ServiceException {
         return orderRepository.findById(id)
                               .orElseThrow(() -> new ServiceException(1, "Order does not exist."));

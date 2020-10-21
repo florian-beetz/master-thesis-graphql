@@ -3,6 +3,8 @@ application:
   housekeeping:
     payment-create: "0 * * * * *" # every minute
     shipment-create: "0 * * * * *" # every minute
+    shipment-update: "0 * * * * *" # every minute
+    dangling-subresources: "0 * * * * *" # every minute
 
 graphql:
   servlet:

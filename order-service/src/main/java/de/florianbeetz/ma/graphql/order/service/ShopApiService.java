@@ -16,11 +16,15 @@ import de.florianbeetz.ma.graphql.client.Mutation;
 import de.florianbeetz.ma.graphql.client.MutationQuery;
 import de.florianbeetz.ma.graphql.client.MutationResponse;
 import de.florianbeetz.ma.graphql.client.Operations;
+import de.florianbeetz.ma.graphql.client.PaymentStatus;
 import de.florianbeetz.ma.graphql.client.QueryResponse;
 import de.florianbeetz.ma.graphql.client.QueryType;
 import de.florianbeetz.ma.graphql.client.QueryTypeQuery;
 import de.florianbeetz.ma.graphql.client.ReservationResponse;
+import de.florianbeetz.ma.graphql.client.ShippingStatus;
 import de.florianbeetz.ma.graphql.client.StockPosition;
+import de.florianbeetz.ma.graphql.client.UpdatePaymentStatusResponse;
+import de.florianbeetz.ma.graphql.client.UpdateShipmentStatusResponse;
 import de.florianbeetz.ma.graphql.order.service.model.ItemPrice;
 import de.florianbeetz.ma.graphql.order.service.model.ReservationPosition;
 import lombok.val;
@@ -145,6 +149,7 @@ public class ShopApiService {
      * @throws ApiException if creation of the shipment failed.
      */
     public long createShipment(String street, String city, String zip, long orderId) throws ApiException {
+        @SuppressWarnings("Convert2MethodRef")
         MutationQuery query = Operations.mutation(mutation -> mutation
                 .createShipment(new AddressInput(city, street, zip), orderId, response -> response
                         .code()
@@ -159,6 +164,60 @@ public class ShopApiService {
         }
 
         return response.getShipment().getId();
+    }
+
+    public ShippingStatus getShipmentStatus(long shipmentId) throws ApiException {
+        @SuppressWarnings("Convert2MethodRef")
+        QueryTypeQuery query = Operations.query(q -> q
+                .shipment(shipmentId, shipment -> shipment
+                        .status()));
+
+        val shipment = this.query(query).getShipment();
+
+        if (shipment == null) {
+            return null;
+        }
+        return shipment.getStatus();
+    }
+
+    public void updateShipmentStatus(long shipmentId, ShippingStatus status) throws ApiException {
+        MutationQuery query = Operations.mutation(mutation -> mutation
+                .updateShipmentStatus(shipmentId, status, response -> response
+                        .code()
+                        .message()
+                        .success()));
+
+        UpdateShipmentStatusResponse response = mutate(query).getUpdateShipmentStatus();
+        if (!response.getSuccess()) {
+            throw new ApiException("Failed to update shipment status: " + response.getMessage() + " (code=" + response.getCode() + ")");
+        }
+    }
+
+    public PaymentStatus getPaymentStatus(long paymentId) throws ApiException {
+        @SuppressWarnings("Convert2MethodRef")
+        QueryTypeQuery query = Operations.query(q -> q
+                .payment(paymentId, payment -> payment
+                        .status()));
+
+        val payment = this.query(query).getPayment();
+        if (payment == null) {
+            return null;
+        }
+
+        return payment.getStatus();
+    }
+
+    public void updatePaymentStatus(long paymentId, PaymentStatus paymentStatus) throws ApiException {
+        MutationQuery query = Operations.mutation(mutation -> mutation
+                .updatePaymentStatus(paymentId, paymentStatus, response -> response
+                        .code()
+                        .message()
+                        .success()));
+
+        UpdatePaymentStatusResponse response = mutate(query).getUpdatePaymentStatus();
+        if (!response.getSuccess()) {
+            throw new ApiException("Failed to update payment status: " + response.getMessage() + " (code=" + response.getCode() + ")");
+        }
     }
 
     private QueryType query(QueryTypeQuery query) throws ApiException {
