@@ -1,5 +1,7 @@
 application:
   baseUrl: ${PAYMENT_BASE_URL}
+  housekeeping:
+    order-update: "0 * * * * *" # every minute
 
 graphql:
   servlet:

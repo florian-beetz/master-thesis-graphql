@@ -19,38 +19,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class OrderQuery extends Query<OrderQuery> {
-    OrderQuery(StringBuilder _queryBuilder) {
+public class UpdateShipmentStatusResponseQuery extends Query<UpdateShipmentStatusResponseQuery> {
+    UpdateShipmentStatusResponseQuery(StringBuilder _queryBuilder) {
         super(_queryBuilder);
     }
 
-    public OrderQuery id() {
-        startField("id");
+    public UpdateShipmentStatusResponseQuery code() {
+        startField("code");
 
         return this;
     }
 
-    public OrderQuery payment(PaymentQueryDefinition queryDef) {
-        startField("payment");
-
-        _queryBuilder.append('{');
-        queryDef.define(new PaymentQuery(_queryBuilder));
-        _queryBuilder.append('}');
+    public UpdateShipmentStatusResponseQuery message() {
+        startField("message");
 
         return this;
     }
 
-    public OrderQuery positions(OrderPositionQueryDefinition queryDef) {
-        startField("positions");
-
-        _queryBuilder.append('{');
-        queryDef.define(new OrderPositionQuery(_queryBuilder));
-        _queryBuilder.append('}');
+    public UpdateShipmentStatusResponseQuery newStatus() {
+        startField("newStatus");
 
         return this;
     }
 
-    public OrderQuery shipment(ShipmentQueryDefinition queryDef) {
+    public UpdateShipmentStatusResponseQuery previousStatus() {
+        startField("previousStatus");
+
+        return this;
+    }
+
+    public UpdateShipmentStatusResponseQuery shipment(ShipmentQueryDefinition queryDef) {
         startField("shipment");
 
         _queryBuilder.append('{');
@@ -60,8 +58,8 @@ public class OrderQuery extends Query<OrderQuery> {
         return this;
     }
 
-    public OrderQuery status() {
-        startField("status");
+    public UpdateShipmentStatusResponseQuery success() {
+        startField("success");
 
         return this;
     }

@@ -1,6 +1,8 @@
 package de.florianbeetz.ma.graphql.payment.service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import de.florianbeetz.ma.graphql.payment.api.model.Order;
 import de.florianbeetz.ma.graphql.payment.api.model.Payment;
@@ -49,6 +51,15 @@ public class PaymentService {
         val savedEntity = paymentRepository.save(paymentEntity);
 
         return new StatusUpdate(previousStatus, status, fromEntity(savedEntity));
+    }
+
+    /**
+     * @return all payments in status {@link PaymentStatus#PAYED}, for which the corresponding order has not yet been updated.
+     */
+    public List<Payment> getPayedPaymentsToBeUpdated() {
+        return paymentRepository.findAllByStatusAndOrderUpdatedFalse(PaymentStatus.PAYED.name()).stream()
+                .map(this::fromEntity)
+                .collect(Collectors.toList());
     }
 
     private Payment fromEntity(PaymentEntity paymentEntity) {

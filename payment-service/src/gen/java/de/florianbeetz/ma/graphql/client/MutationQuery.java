@@ -159,10 +159,13 @@ public class MutationQuery extends Query<MutationQuery> {
         return this;
     }
 
-    public MutationQuery createOrder(List<OrderPositionInput> positions, CreateOrderResponseQueryDefinition queryDef) {
+    public MutationQuery createOrder(AddressInput destinationAddress, List<OrderPositionInput> positions, CreateOrderResponseQueryDefinition queryDef) {
         startField("createOrder");
 
-        _queryBuilder.append("(positions:");
+        _queryBuilder.append("(destinationAddress:");
+        destinationAddress.appendTo(_queryBuilder);
+
+        _queryBuilder.append(",positions:");
         _queryBuilder.append('[');
         {
             String listSeperator1 = "";
@@ -232,6 +235,42 @@ public class MutationQuery extends Query<MutationQuery> {
 
         _queryBuilder.append('{');
         queryDef.define(new UpdatePaymentStatusResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
+    public MutationQuery createShipment(AddressInput destinationAddress, Long orderId, CreateShipmentResponseQueryDefinition queryDef) {
+        startField("createShipment");
+
+        _queryBuilder.append("(destinationAddress:");
+        destinationAddress.appendTo(_queryBuilder);
+
+        _queryBuilder.append(",orderId:");
+        Query.appendQuotedString(_queryBuilder, orderId.toString());
+
+        _queryBuilder.append(')');
+
+        _queryBuilder.append('{');
+        queryDef.define(new CreateShipmentResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
+    public MutationQuery updateShipmentStatus(Long shipmentId, ShippingStatus status, UpdateShipmentStatusResponseQueryDefinition queryDef) {
+        startField("updateShipmentStatus");
+
+        _queryBuilder.append("(shipmentId:");
+        Query.appendQuotedString(_queryBuilder, shipmentId.toString());
+
+        _queryBuilder.append(",status:");
+        _queryBuilder.append(status.toString());
+
+        _queryBuilder.append(')');
+
+        _queryBuilder.append('{');
+        queryDef.define(new UpdateShipmentStatusResponseQuery(_queryBuilder));
         _queryBuilder.append('}');
 
         return this;

@@ -65,6 +65,13 @@ public class ApiResponseQuery extends Query<ApiResponseQuery> {
         return this;
     }
 
+    public ApiResponseQuery onCreateShipmentResponse(CreateShipmentResponseQueryDefinition queryDef) {
+        startInlineFragment("CreateShipmentResponse");
+        queryDef.define(new CreateShipmentResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+        return this;
+    }
+
     public ApiResponseQuery onReservationResponse(ReservationResponseQueryDefinition queryDef) {
         startInlineFragment("ReservationResponse");
         queryDef.define(new ReservationResponseQuery(_queryBuilder));
@@ -75,6 +82,13 @@ public class ApiResponseQuery extends Query<ApiResponseQuery> {
     public ApiResponseQuery onUpdatePaymentStatusResponse(UpdatePaymentStatusResponseQueryDefinition queryDef) {
         startInlineFragment("UpdatePaymentStatusResponse");
         queryDef.define(new UpdatePaymentStatusResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+        return this;
+    }
+
+    public ApiResponseQuery onUpdateShipmentStatusResponse(UpdateShipmentStatusResponseQueryDefinition queryDef) {
+        startInlineFragment("UpdateShipmentStatusResponse");
+        queryDef.define(new UpdateShipmentStatusResponseQuery(_queryBuilder));
         _queryBuilder.append('}');
         return this;
     }

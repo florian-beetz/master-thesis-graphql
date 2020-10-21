@@ -61,6 +61,17 @@ public class Order extends AbstractResponse<Order> {
                     break;
                 }
 
+                case "shipment": {
+                    Shipment optional1 = null;
+                    if (!field.getValue().isJsonNull()) {
+                        optional1 = new Shipment(jsonAsObject(field.getValue(), key));
+                    }
+
+                    responseData.put(key, optional1);
+
+                    break;
+                }
+
                 case "status": {
                     OrderStatus optional1 = null;
                     if (!field.getValue().isJsonNull()) {
@@ -114,6 +125,15 @@ public class Order extends AbstractResponse<Order> {
         return this;
     }
 
+    public Shipment getShipment() {
+        return (Shipment) get("shipment");
+    }
+
+    public Order setShipment(Shipment arg) {
+        optimisticData.put(getKey("shipment"), arg);
+        return this;
+    }
+
     public OrderStatus getStatus() {
         return (OrderStatus) get("status");
     }
@@ -130,6 +150,8 @@ public class Order extends AbstractResponse<Order> {
             case "payment": return true;
 
             case "positions": return true;
+
+            case "shipment": return true;
 
             case "status": return false;
 

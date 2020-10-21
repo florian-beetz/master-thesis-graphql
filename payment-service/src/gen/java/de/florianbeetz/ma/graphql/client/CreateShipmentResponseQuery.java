@@ -19,38 +19,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class OrderQuery extends Query<OrderQuery> {
-    OrderQuery(StringBuilder _queryBuilder) {
+public class CreateShipmentResponseQuery extends Query<CreateShipmentResponseQuery> {
+    CreateShipmentResponseQuery(StringBuilder _queryBuilder) {
         super(_queryBuilder);
     }
 
-    public OrderQuery id() {
-        startField("id");
+    public CreateShipmentResponseQuery code() {
+        startField("code");
 
         return this;
     }
 
-    public OrderQuery payment(PaymentQueryDefinition queryDef) {
-        startField("payment");
-
-        _queryBuilder.append('{');
-        queryDef.define(new PaymentQuery(_queryBuilder));
-        _queryBuilder.append('}');
+    public CreateShipmentResponseQuery message() {
+        startField("message");
 
         return this;
     }
 
-    public OrderQuery positions(OrderPositionQueryDefinition queryDef) {
-        startField("positions");
-
-        _queryBuilder.append('{');
-        queryDef.define(new OrderPositionQuery(_queryBuilder));
-        _queryBuilder.append('}');
-
-        return this;
-    }
-
-    public OrderQuery shipment(ShipmentQueryDefinition queryDef) {
+    public CreateShipmentResponseQuery shipment(ShipmentQueryDefinition queryDef) {
         startField("shipment");
 
         _queryBuilder.append('{');
@@ -60,8 +46,8 @@ public class OrderQuery extends Query<OrderQuery> {
         return this;
     }
 
-    public OrderQuery status() {
-        startField("status");
+    public CreateShipmentResponseQuery success() {
+        startField("success");
 
         return this;
     }
