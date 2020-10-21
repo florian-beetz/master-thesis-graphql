@@ -94,7 +94,7 @@ const retry = async (n, wait, action) => {
 }
 
 Promise.all(serviceList
-    .map(({name, url}) => retry(10, 5, async () => {
+    .map(({name, url}) => retry(10, 5000, async () => {
         console.log("Checking availability of service", name)
         await isAlive(url)
     })))
