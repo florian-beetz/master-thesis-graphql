@@ -1,5 +1,8 @@
 package de.florianbeetz.ma.graphql.shipping.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import de.florianbeetz.ma.graphql.shipping.api.model.Address;
 import de.florianbeetz.ma.graphql.shipping.api.model.Order;
 import de.florianbeetz.ma.graphql.shipping.api.model.Shipment;
@@ -16,6 +19,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ShippingService {
+
+    private static final double DEFAULT_SHIPPING_COST = 4.99;
 
     private final ShipmentRepository shipmentRepository;
 
@@ -38,7 +43,7 @@ public class ShippingService {
             throw new ServiceException(11, "Parameter 'orderId' is not a valid ID.");
         }
 
-        ShipmentEntity entity = new ShipmentEntity(null, orderId, destinationAddress.getStreet(), destinationAddress.getCity(), destinationAddress.getZip(), ShippingStatus.CREATED.name());
+        ShipmentEntity entity = new ShipmentEntity(null, orderId, destinationAddress.getStreet(), destinationAddress.getCity(), destinationAddress.getZip(), ShippingStatus.CREATED.name(), false);
         val savedEntity = shipmentRepository.save(entity);
 
         return fromEntity(savedEntity);
@@ -59,6 +64,16 @@ public class ShippingService {
         return new StatusUpdate(status, previousStatus, fromEntity(savedEntity));
     }
 
+    public List<Shipment> getUpdatableShipments() {
+        return shipmentRepository.findAllByStatusAndOrderUpdatedFalse(ShippingStatus.READY_TO_SHIP.name()).stream()
+                .map(this::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public double calculateShippingCost(long shipmentId, long orderId) {
+        return DEFAULT_SHIPPING_COST;
+    }
+
     private Shipment fromEntity(ShipmentEntity entity) {
         return new Shipment(
                 entity.getId(),
@@ -68,7 +83,8 @@ public class ShippingService {
                         entity.getDestinationZip()
                 ),
                 new Order(entity.getOrderId()),
-                de.florianbeetz.ma.graphql.shipping.api.model.ShippingStatus.from(entity.getStatus())
+                de.florianbeetz.ma.graphql.shipping.api.model.ShippingStatus.from(entity.getStatus()),
+                () -> calculateShippingCost(entity.getId(), entity.getOrderId())
         );
     }
 }

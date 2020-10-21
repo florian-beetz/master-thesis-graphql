@@ -1,5 +1,7 @@
 package de.florianbeetz.ma.graphql.shipping.api.model;
 
+import java.util.function.Supplier;
+
 import lombok.Data;
 
 /**
@@ -12,8 +14,9 @@ public class Shipment {
     private final Address destinationAddress;
     private final Order order;
     private final ShippingStatus status;
+    private final Supplier<Double> costSupplier;
 
     public double getCost() {
-        return 0.0; // TODO: implement cost calculation
+        return costSupplier.get();
     }
 }

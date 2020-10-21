@@ -2,12 +2,22 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.shopify.graphql.support.AbstractResponse;
+import com.shopify.graphql.support.Arguments;
+import com.shopify.graphql.support.Error;
+import com.shopify.graphql.support.Query;
 import com.shopify.graphql.support.SchemaViolationError;
+import com.shopify.graphql.support.TopLevelResponse;
+import com.shopify.graphql.support.Input;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Mutation extends AbstractResponse<Mutation> {
     public Mutation() {
@@ -98,6 +108,18 @@ public class Mutation extends AbstractResponse<Mutation> {
 
                 case "updatePaymentStatus": {
                     responseData.put(key, new UpdatePaymentStatusResponse(jsonAsObject(field.getValue(), key)));
+
+                    break;
+                }
+
+                case "createShipment": {
+                    responseData.put(key, new CreateShipmentResponse(jsonAsObject(field.getValue(), key)));
+
+                    break;
+                }
+
+                case "updateShipmentStatus": {
+                    responseData.put(key, new UpdateShipmentStatusResponse(jsonAsObject(field.getValue(), key)));
 
                     break;
                 }
@@ -198,6 +220,24 @@ public class Mutation extends AbstractResponse<Mutation> {
         return this;
     }
 
+    public CreateShipmentResponse getCreateShipment() {
+        return (CreateShipmentResponse) get("createShipment");
+    }
+
+    public Mutation setCreateShipment(CreateShipmentResponse arg) {
+        optimisticData.put(getKey("createShipment"), arg);
+        return this;
+    }
+
+    public UpdateShipmentStatusResponse getUpdateShipmentStatus() {
+        return (UpdateShipmentStatusResponse) get("updateShipmentStatus");
+    }
+
+    public Mutation setUpdateShipmentStatus(UpdateShipmentStatusResponse arg) {
+        optimisticData.put(getKey("updateShipmentStatus"), arg);
+        return this;
+    }
+
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "bookOutItems": return true;
@@ -217,6 +257,10 @@ public class Mutation extends AbstractResponse<Mutation> {
             case "createPayment": return true;
 
             case "updatePaymentStatus": return true;
+
+            case "createShipment": return true;
+
+            case "updateShipmentStatus": return true;
 
             default: return false;
         }

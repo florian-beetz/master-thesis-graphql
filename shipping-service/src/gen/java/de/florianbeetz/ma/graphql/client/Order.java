@@ -2,14 +2,22 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.shopify.graphql.support.AbstractResponse;
+import com.shopify.graphql.support.Arguments;
+import com.shopify.graphql.support.Error;
+import com.shopify.graphql.support.Query;
 import com.shopify.graphql.support.SchemaViolationError;
+import com.shopify.graphql.support.TopLevelResponse;
+import com.shopify.graphql.support.Input;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Order extends AbstractResponse<Order> {
     public Order() {
@@ -49,6 +57,17 @@ public class Order extends AbstractResponse<Order> {
                     }
 
                     responseData.put(key, list1);
+
+                    break;
+                }
+
+                case "shipment": {
+                    Shipment optional1 = null;
+                    if (!field.getValue().isJsonNull()) {
+                        optional1 = new Shipment(jsonAsObject(field.getValue(), key));
+                    }
+
+                    responseData.put(key, optional1);
 
                     break;
                 }
@@ -106,6 +125,15 @@ public class Order extends AbstractResponse<Order> {
         return this;
     }
 
+    public Shipment getShipment() {
+        return (Shipment) get("shipment");
+    }
+
+    public Order setShipment(Shipment arg) {
+        optimisticData.put(getKey("shipment"), arg);
+        return this;
+    }
+
     public OrderStatus getStatus() {
         return (OrderStatus) get("status");
     }
@@ -122,6 +150,8 @@ public class Order extends AbstractResponse<Order> {
             case "payment": return true;
 
             case "positions": return true;
+
+            case "shipment": return true;
 
             case "status": return false;
 

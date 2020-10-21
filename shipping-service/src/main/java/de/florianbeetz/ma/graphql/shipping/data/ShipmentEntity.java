@@ -37,4 +37,8 @@ public class ShipmentEntity {
     @Column(nullable = false)
     private String status;
 
+    /** indicates that the corresponding order has already been set to status shipped */
+    @Column(nullable = false)
+    private boolean orderUpdated;
+
 }

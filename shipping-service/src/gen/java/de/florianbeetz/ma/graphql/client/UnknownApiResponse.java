@@ -2,12 +2,22 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.shopify.graphql.support.AbstractResponse;
+import com.shopify.graphql.support.Arguments;
+import com.shopify.graphql.support.Error;
+import com.shopify.graphql.support.Query;
 import com.shopify.graphql.support.SchemaViolationError;
+import com.shopify.graphql.support.TopLevelResponse;
+import com.shopify.graphql.support.Input;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> implements ApiResponse {
     public UnknownApiResponse() {
@@ -67,12 +77,20 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
                 return new CreatePaymentResponse(fields);
             }
 
+            case "CreateShipmentResponse": {
+                return new CreateShipmentResponse(fields);
+            }
+
             case "ReservationResponse": {
                 return new ReservationResponse(fields);
             }
 
             case "UpdatePaymentStatusResponse": {
                 return new UpdatePaymentStatusResponse(fields);
+            }
+
+            case "UpdateShipmentStatusResponse": {
+                return new UpdateShipmentStatusResponse(fields);
             }
 
             case "UpdateStatusResponse": {
