@@ -46,6 +46,20 @@ public class ShopApiService {
         this.baseUrl = baseUrl;
     }
 
+    public OrderStatus getOrderStatus(long orderId) throws ApiException {
+        @SuppressWarnings("Convert2MethodRef")
+        val query = Operations.query(q -> q
+                .order(orderId, order -> order
+                        .status()));
+
+        val order = this.query(query).getOrder();
+        if (order == null) {
+            return null;
+        }
+
+        return order.getStatus();
+    }
+
     public void updateOrderStatus(long orderId, OrderStatus status) throws ApiException {
         val query = Operations.mutation(mutation -> mutation
                 .updateOrderStatus(orderId, status, response -> response

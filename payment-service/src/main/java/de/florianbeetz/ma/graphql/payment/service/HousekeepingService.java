@@ -31,9 +31,16 @@ public class HousekeepingService {
         val payments = paymentService.getPayedPaymentsToBeUpdated();
         for (val payment : payments) {
             try {
-                shopApiService.updateOrderStatus(payment.getOrder().getId(), OrderStatus.PAYMENT_RECEIVED);
+                val status = shopApiService.getOrderStatus(payment.getOrder().getId());
+                if (status == OrderStatus.CREATED) {
+                    shopApiService.updateOrderStatus(payment.getOrder().getId(), OrderStatus.PAYMENT_RECEIVED);
 
-                updated++;
+                    updated++;
+                } else if (status == OrderStatus.PAYMENT_RECEIVED) {
+                    log.warn("Did not update order id={} for payment id={}, because it was already in status payment_received", payment.getOrder().getId(), payment.getId());
+                } else {
+                    log.error("Failed to update order id={} for payment id={}, because it is in status {}", payment.getOrder().getId(), payment.getId(),  status);
+                }
             } catch (Exception e) {
                 log.error("Failed to update order id={} to status payment received", payment.getOrder().getId(), e);
             }
