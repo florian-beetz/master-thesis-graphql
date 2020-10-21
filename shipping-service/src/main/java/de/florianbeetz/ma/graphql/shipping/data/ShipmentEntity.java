@@ -1,0 +1,40 @@
+package de.florianbeetz.ma.graphql.shipping.data;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * @author Florian Beetz
+ */
+@Data
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+public class ShipmentEntity {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Column(nullable = false)
+    private long orderId;
+
+    @Column(nullable = false)
+    private String destinationStreet;
+
+    @Column(nullable = false)
+    private String destinationCity;
+
+    @Column(nullable = false)
+    private String destinationZip;
+
+    @Column(nullable = false)
+    private String status;
+
+}

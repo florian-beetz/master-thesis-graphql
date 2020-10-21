@@ -25,6 +25,7 @@ services:
       - INVENTORY_HOST=http://host.docker.internal:8080/inventory/graphql
       - ORDER_HOST=http://host.docker.internal:8080/order/graphql
       - PAYMENT_HOST=http://host.docker.internal:8080/payment/graphql
+      - SHIPPING_HOST=http://host.docker.internal:8080/shipping/graphql
     depends_on:
       - traefik
       - inventory

@@ -1,0 +1,66 @@
+type Order @key(fields: "id") @extends {
+    id: ID! @external
+}
+
+type Address {
+    street: String!
+    city: String!
+    zip: String!
+}
+
+input AddressInput {
+    street: String!
+    city: String!
+    zip: String!
+}
+
+enum ShippingStatus {
+    CREATED
+    READY_TO_SHIP
+    SHIPPED
+    CANCELLED
+}
+
+type Shipment {
+    id: ID!
+
+    destinationAddress: Address!
+    order: Order!
+    status: ShippingStatus!
+
+    cost: Float
+}
+
+type Query {
+    shipment(id: ID!): Shipment
+}
+
+interface ApiResponse {
+    code: String!
+    success: Boolean!
+    message: String
+}
+
+type CreateShipmentResponse implements ApiResponse {
+    shipment: Shipment
+
+    code: String!
+    success: Boolean!
+    message: String
+}
+
+type UpdateShipmentStatusResponse implements ApiResponse {
+    newStatus: ShippingStatus
+    previousStatus: ShippingStatus
+    shipment: Shipment
+
+    code: String!
+    success: Boolean!
+    message: String
+}
+
+type Mutation {
+    createShipment(destinationAddress: AddressInput!, orderId: ID!): CreateShipmentResponse!
+
+    updateShipmentStatus(shipmentId: ID!, status: ShippingStatus!): UpdateShipmentStatusResponse!
+}
