@@ -141,11 +141,11 @@ services:
     build: ./shipping-service
     image: registry.florianbeetz.de/ma-graphql/shipping
     environment:
-      - SHIPPING_DB_HOST=payment_db
+      - SHIPPING_DB_HOST=shipping_db
       - SHIPPING_DB_PORT=5432
       - SHIPPING_DB_DATABASE=postgres
       - SHIPPING_DB_USER=postgres
-      - SHIPPING_DB_PASSWORD=${PAYMENT_DB_PASSWORD}
+      - SHIPPING_DB_PASSWORD=${SHIPPING_DB_PASSWORD}
       - SHIPPING_AUTH_URL=${ROOT_URL}/auth
       - SHIPPING_AUTH_CLIENT=${PAYMENT_CLIENT_ID}
       - SHIPPING_AUTH_SECRET=${PAYMENT_CLIENT_SECRET}
