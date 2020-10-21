@@ -6,6 +6,7 @@ const process = require('process');
 const inventoryHost = process.env.INVENTORY_HOST;
 const orderHost = process.env.ORDER_HOST;
 const paymentHost = process.env.PAYMENT_HOST;
+const shippingHost = process.env.SHIPPING_HOST;
 
 if (!inventoryHost) {
     console.log("Host of inventory service is not defined. Use environment variable INVENTORY_HOST to set it.");
@@ -17,6 +18,10 @@ if (!orderHost) {
 }
 if (!paymentHost) {
     console.log("Host of payment service is not defined. Use environment variable PAYMENT_HOST to set it.");
+    process.exit(1);
+}
+if (!shippingHost) {
+    console.log("Host of shipping service is not defined. Use environment variable SHIPPING_HOST to set it.");
     process.exit(1);
 }
 
@@ -39,6 +44,7 @@ const gateway = new ApolloGateway({
         { name: 'inventory', url: inventoryHost },
         { name: 'order', url: orderHost },
         { name: 'payment', url: paymentHost },
+        { name: 'shipping', url: shippingHost },
     ],
 
     // use the pass-through implementation for every service
