@@ -21,7 +21,7 @@ enum ShippingStatus {
     CANCELLED
 }
 
-type Shipment {
+type Shipment @key(fields: "id") {
     id: ID!
 
     destinationAddress: Address!
