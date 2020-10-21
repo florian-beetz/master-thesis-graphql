@@ -9,11 +9,11 @@ import com.google.gson.JsonObject;
 import com.shopify.graphql.support.AbstractResponse;
 import com.shopify.graphql.support.SchemaViolationError;
 
-public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> implements ApiResponse {
-    public UnknownApiResponse() {
+public class CreateShipmentResponse extends AbstractResponse<CreateShipmentResponse> implements ApiResponse {
+    public CreateShipmentResponse() {
     }
 
-    public UnknownApiResponse(JsonObject fields) throws SchemaViolationError {
+    public CreateShipmentResponse(JsonObject fields) throws SchemaViolationError {
         for (Map.Entry<String, JsonElement> field : fields.entrySet()) {
             String key = field.getKey();
             String fieldName = getFieldName(key);
@@ -28,6 +28,17 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
                     String optional1 = null;
                     if (!field.getValue().isJsonNull()) {
                         optional1 = jsonAsString(field.getValue(), key);
+                    }
+
+                    responseData.put(key, optional1);
+
+                    break;
+                }
+
+                case "shipment": {
+                    Shipment optional1 = null;
+                    if (!field.getValue().isJsonNull()) {
+                        optional1 = new Shipment(jsonAsObject(field.getValue(), key));
                     }
 
                     responseData.put(key, optional1);
@@ -52,56 +63,15 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
         }
     }
 
-    public static ApiResponse create(JsonObject fields) throws SchemaViolationError {
-        String typeName = fields.getAsJsonPrimitive("__typename").getAsString();
-        switch (typeName) {
-            case "BookOutResponse": {
-                return new BookOutResponse(fields);
-            }
-
-            case "CreateOrderResponse": {
-                return new CreateOrderResponse(fields);
-            }
-
-            case "CreatePaymentResponse": {
-                return new CreatePaymentResponse(fields);
-            }
-
-            case "CreateShipmentResponse": {
-                return new CreateShipmentResponse(fields);
-            }
-
-            case "ReservationResponse": {
-                return new ReservationResponse(fields);
-            }
-
-            case "UpdatePaymentStatusResponse": {
-                return new UpdatePaymentStatusResponse(fields);
-            }
-
-            case "UpdateShipmentStatusResponse": {
-                return new UpdateShipmentStatusResponse(fields);
-            }
-
-            case "UpdateStatusResponse": {
-                return new UpdateStatusResponse(fields);
-            }
-
-            default: {
-                return new UnknownApiResponse(fields);
-            }
-        }
-    }
-
     public String getGraphQlTypeName() {
-        return (String) get("__typename");
+        return "CreateShipmentResponse";
     }
 
     public String getCode() {
         return (String) get("code");
     }
 
-    public UnknownApiResponse setCode(String arg) {
+    public CreateShipmentResponse setCode(String arg) {
         optimisticData.put(getKey("code"), arg);
         return this;
     }
@@ -110,8 +80,17 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
         return (String) get("message");
     }
 
-    public UnknownApiResponse setMessage(String arg) {
+    public CreateShipmentResponse setMessage(String arg) {
         optimisticData.put(getKey("message"), arg);
+        return this;
+    }
+
+    public Shipment getShipment() {
+        return (Shipment) get("shipment");
+    }
+
+    public CreateShipmentResponse setShipment(Shipment arg) {
+        optimisticData.put(getKey("shipment"), arg);
         return this;
     }
 
@@ -119,7 +98,7 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
         return (Boolean) get("success");
     }
 
-    public UnknownApiResponse setSuccess(Boolean arg) {
+    public CreateShipmentResponse setSuccess(Boolean arg) {
         optimisticData.put(getKey("success"), arg);
         return this;
     }
@@ -129,6 +108,8 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
             case "code": return false;
 
             case "message": return false;
+
+            case "shipment": return true;
 
             case "success": return false;
 

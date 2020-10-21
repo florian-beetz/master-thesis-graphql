@@ -106,6 +106,17 @@ public class QueryType extends AbstractResponse<QueryType> {
                     break;
                 }
 
+                case "shipment": {
+                    Shipment optional1 = null;
+                    if (!field.getValue().isJsonNull()) {
+                        optional1 = new Shipment(jsonAsObject(field.getValue(), key));
+                    }
+
+                    responseData.put(key, optional1);
+
+                    break;
+                }
+
                 case "__typename": {
                     responseData.put(key, jsonAsString(field.getValue(), key));
                     break;
@@ -175,6 +186,15 @@ public class QueryType extends AbstractResponse<QueryType> {
         return this;
     }
 
+    public Shipment getShipment() {
+        return (Shipment) get("shipment");
+    }
+
+    public QueryType setShipment(Shipment arg) {
+        optimisticData.put(getKey("shipment"), arg);
+        return this;
+    }
+
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "item": return true;
@@ -188,6 +208,8 @@ public class QueryType extends AbstractResponse<QueryType> {
             case "order": return true;
 
             case "payment": return true;
+
+            case "shipment": return true;
 
             default: return false;
         }

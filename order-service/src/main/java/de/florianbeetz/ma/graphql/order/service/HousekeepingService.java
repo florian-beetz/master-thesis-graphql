@@ -41,4 +41,24 @@ public class HousekeepingService {
         log.info("Created {} payments.", created);
     }
 
+    @Scheduled(cron = "${application.housekeeping.shipment-create}")
+    public void createShipments() {
+        log.info("Creating shipments for orders...");
+        int created = 0;
+
+        val orders = orderService.getOrdersWithoutShipment();
+        for (val order : orders) {
+            try {
+                val shipmentId = shopApiService.createShipment(order.getDestinationStreet(), order.getDestinationCity(), order.getDestinationZip(), order.getId());
+                orderService.updateShipmentId(order, shipmentId);
+
+                created++;
+            } catch (Exception e) {
+                log.error("Failed to create shipment for order id={}", order.getId(), e);
+            }
+        }
+
+        log.info("Created {} shipments.", created);
+    }
+
 }

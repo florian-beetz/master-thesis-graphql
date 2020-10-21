@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.florianbeetz.ma.graphql.order.api.model.AddressInput;
 import de.florianbeetz.ma.graphql.order.api.model.Item;
 import de.florianbeetz.ma.graphql.order.api.model.ItemStock;
 import de.florianbeetz.ma.graphql.order.api.model.ItemStockPosition;
 import de.florianbeetz.ma.graphql.order.api.model.Order;
 import de.florianbeetz.ma.graphql.order.api.model.OrderPosition;
 import de.florianbeetz.ma.graphql.order.api.model.Payment;
+import de.florianbeetz.ma.graphql.order.api.model.Shipment;
 import de.florianbeetz.ma.graphql.order.data.OrderEntity;
 import de.florianbeetz.ma.graphql.order.data.OrderPositionEntity;
 import de.florianbeetz.ma.graphql.order.data.OrderPositionRepository;
@@ -46,11 +48,11 @@ public class OrderService {
                 .orElse(null);
     }
 
-    public Order createOrder(List<de.florianbeetz.ma.graphql.order.service.model.OrderPosition> positions) throws ServiceException {
+    public Order createOrder(List<de.florianbeetz.ma.graphql.order.service.model.OrderPosition> positions, AddressInput address) throws ServiceException {
         List<ReservationPosition> reservationPositions = inventoryService.reserveItems(positions);
         log.debug("reserved items: {}", reservationPositions);
 
-        val orderEntity = new OrderEntity();
+        val orderEntity = new OrderEntity(address.getStreet(), address.getCity(), address.getZip());
         val savedOrder = orderRepository.save(orderEntity);
 
         List<OrderPositionEntity> positionEntities = new ArrayList<>();
@@ -72,8 +74,7 @@ public class OrderService {
     }
 
     public StatusUpdate updateOrderStatus(long id, OrderStatus status) throws ServiceException {
-        val orderEntity = orderRepository.findById(id)
-                .orElseThrow(() -> new ServiceException(1, "Order does not exist."));
+        val orderEntity = loadById(id);
 
         val previousStatus = OrderStatus.from(orderEntity.getStatus());
         if (!OrderStatus.isValidStatusTransition(previousStatus, status)) {
@@ -87,9 +88,15 @@ public class OrderService {
     }
 
     public List<Order> getOrdersWithoutPayment() {
-        return orderRepository.findAllByPaymentIdNull().stream()
+        return orderRepository.findAllByPaymentIdNullAndShipmentIdNotNull().stream()
                        .map(this::fromEntity)
                        .collect(Collectors.toList());
+    }
+
+    public List<Order> getOrdersWithoutShipment() {
+        return orderRepository.findAllByShipmentIdNull().stream()
+                .map(this::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public double getOrderTotal(Order order) throws ServiceException {
@@ -114,10 +121,20 @@ public class OrderService {
     }
     
     public void updatePaymentId(Order order, long paymentId) throws ServiceException {
-        val orderEntity = orderRepository.findById(order.getId())
-                                         .orElseThrow(() -> new ServiceException(1, "Order does not exist."));
+        val orderEntity = loadById(order.getId());
         orderEntity.setPaymentId(paymentId);
         orderRepository.save(orderEntity);
+    }
+
+    public void updateShipmentId(Order order, long shipmentId) throws ServiceException {
+        val orderEntity = loadById(order.getId());
+        orderEntity.setShipmentId(shipmentId);
+        orderRepository.save(orderEntity);
+    }
+
+    private OrderEntity loadById(long id) throws ServiceException {
+        return orderRepository.findById(id)
+                              .orElseThrow(() -> new ServiceException(1, "Order does not exist."));
     }
 
     private Order fromEntity(OrderEntity orderEntity) {
@@ -145,6 +162,10 @@ public class OrderService {
         return new Order(orderEntity.getId(),
                 orderPositions,
                 de.florianbeetz.ma.graphql.order.api.model.OrderStatus.from(orderEntity.getStatus()),
-                orderEntity.getPaymentId() == null ? null : new Payment(orderEntity.getPaymentId()));
+                orderEntity.getPaymentId() == null ? null : new Payment(orderEntity.getPaymentId()),
+                orderEntity.getShipmentId() == null ? null : new Shipment(orderEntity.getShipmentId()),
+                orderEntity.getDeliveryStreet(),
+                orderEntity.getDeliveryCity(),
+                orderEntity.getDeliveryZip());
     }
 }

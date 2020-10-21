@@ -2,6 +2,7 @@ application:
   baseUrl: ${ORDER_BASE_URL}
   housekeeping:
     payment-create: "0 * * * * *" # every minute
+    shipment-create: "0 * * * * *" # every minute
 
 graphql:
   servlet:

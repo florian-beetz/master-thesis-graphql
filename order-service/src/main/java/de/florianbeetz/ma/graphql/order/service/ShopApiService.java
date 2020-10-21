@@ -6,9 +6,11 @@ import java.util.stream.Collectors;
 
 import com.shopify.graphql.support.Error;
 import com.shopify.graphql.support.SchemaViolationError;
+import de.florianbeetz.ma.graphql.client.AddressInput;
 import de.florianbeetz.ma.graphql.client.BookOutInput;
 import de.florianbeetz.ma.graphql.client.BookOutResponse;
 import de.florianbeetz.ma.graphql.client.CreatePaymentResponse;
+import de.florianbeetz.ma.graphql.client.CreateShipmentResponse;
 import de.florianbeetz.ma.graphql.client.ItemStockQuery;
 import de.florianbeetz.ma.graphql.client.Mutation;
 import de.florianbeetz.ma.graphql.client.MutationQuery;
@@ -128,6 +130,35 @@ public class ShopApiService {
         return this.query(query).getItems().stream()
                 .map(i -> new ItemPrice(i.getId(), i.getPrice()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Creates a new shipment and returns its ID.
+     *
+     * @param street    destination street of the shipment.
+     * @param city      destination city of the shipment.
+     * @param zip       destination zip of the shipment.
+     * @param orderId   corresponding order ID.
+     *
+     * @return the ID of the shipment.
+     *
+     * @throws ApiException if creation of the shipment failed.
+     */
+    public long createShipment(String street, String city, String zip, long orderId) throws ApiException {
+        MutationQuery query = Operations.mutation(mutation -> mutation
+                .createShipment(new AddressInput(city, street, zip), orderId, response -> response
+                        .code()
+                        .message()
+                        .success()
+                        .shipment(shipment -> shipment
+                                .id())));
+
+        CreateShipmentResponse response = mutate(query).getCreateShipment();
+        if (!response.getSuccess()) {
+            throw new ApiException("Failed to create shipment: " + response.getMessage() + "(code=" + response.getCode() + ")");
+        }
+
+        return response.getShipment().getId();
     }
 
     private QueryType query(QueryTypeQuery query) throws ApiException {

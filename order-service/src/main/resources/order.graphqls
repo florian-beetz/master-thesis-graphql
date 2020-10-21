@@ -10,11 +10,22 @@ type Payment @key(fields: "id") @extends {
     id: ID! @external
 }
 
+type Shipment @key(fields: "id") @extends {
+    id: ID! @external
+}
+
+input AddressInput {
+    street: String!
+    city: String!
+    zip: String!
+}
+
 type Order @key(fields: "id") {
     id: ID!
     positions: [OrderPosition]!
     status: OrderStatus
     payment: Payment
+    shipment: Shipment
 }
 
 enum OrderStatus {
@@ -69,7 +80,7 @@ type UpdateStatusResponse implements ApiResponse {
 }
 
 type Mutation {
-    createOrder(positions: [OrderPositionInput]!): CreateOrderResponse
+    createOrder(positions: [OrderPositionInput]!, destinationAddress: AddressInput!): CreateOrderResponse
 
     updateOrderStatus(orderId: ID!, status: OrderStatus!): UpdateStatusResponse
 }

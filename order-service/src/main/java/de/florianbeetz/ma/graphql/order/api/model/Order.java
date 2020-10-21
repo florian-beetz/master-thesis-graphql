@@ -11,5 +11,9 @@ public class Order {
     private final List<OrderPosition> positions;
     private final OrderStatus status;
     private final Payment payment;
+    private final Shipment shipment;
 
+    private final String destinationStreet;
+    private final String destinationCity;
+    private final String destinationZip;
 }

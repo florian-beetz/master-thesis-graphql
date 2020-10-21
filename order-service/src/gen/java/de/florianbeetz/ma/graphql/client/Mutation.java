@@ -102,6 +102,18 @@ public class Mutation extends AbstractResponse<Mutation> {
                     break;
                 }
 
+                case "createShipment": {
+                    responseData.put(key, new CreateShipmentResponse(jsonAsObject(field.getValue(), key)));
+
+                    break;
+                }
+
+                case "updateShipmentStatus": {
+                    responseData.put(key, new UpdateShipmentStatusResponse(jsonAsObject(field.getValue(), key)));
+
+                    break;
+                }
+
                 case "__typename": {
                     responseData.put(key, jsonAsString(field.getValue(), key));
                     break;
@@ -198,6 +210,24 @@ public class Mutation extends AbstractResponse<Mutation> {
         return this;
     }
 
+    public CreateShipmentResponse getCreateShipment() {
+        return (CreateShipmentResponse) get("createShipment");
+    }
+
+    public Mutation setCreateShipment(CreateShipmentResponse arg) {
+        optimisticData.put(getKey("createShipment"), arg);
+        return this;
+    }
+
+    public UpdateShipmentStatusResponse getUpdateShipmentStatus() {
+        return (UpdateShipmentStatusResponse) get("updateShipmentStatus");
+    }
+
+    public Mutation setUpdateShipmentStatus(UpdateShipmentStatusResponse arg) {
+        optimisticData.put(getKey("updateShipmentStatus"), arg);
+        return this;
+    }
+
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "bookOutItems": return true;
@@ -217,6 +247,10 @@ public class Mutation extends AbstractResponse<Mutation> {
             case "createPayment": return true;
 
             case "updatePaymentStatus": return true;
+
+            case "createShipment": return true;
+
+            case "updateShipmentStatus": return true;
 
             default: return false;
         }

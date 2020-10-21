@@ -3,6 +3,7 @@ package de.florianbeetz.ma.graphql.order.api;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.florianbeetz.ma.graphql.order.api.model.AddressInput;
 import de.florianbeetz.ma.graphql.order.api.model.CreateOrderResponse;
 import de.florianbeetz.ma.graphql.order.api.model.Order;
 import de.florianbeetz.ma.graphql.order.api.model.OrderPositionInput;
@@ -28,9 +29,9 @@ public class Mutation implements GraphQLMutationResolver {
         this.orderService = orderService;
     }
 
-    public CreateOrderResponse createOrder(List<OrderPositionInput> positions) {
+    public CreateOrderResponse createOrder(List<OrderPositionInput> positions, AddressInput destinationAddress) {
         try {
-            Order order = orderService.createOrder(toModel(positions));
+            Order order = orderService.createOrder(toModel(positions), destinationAddress);
             return CreateOrderResponse.successful(order);
         } catch (ServiceException e) {
             log.error("Failed to create order.", e);

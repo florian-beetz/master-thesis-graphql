@@ -177,6 +177,21 @@ public class QueryTypeQuery extends Query<QueryTypeQuery> {
         return this;
     }
 
+    public QueryTypeQuery shipment(Long id, ShipmentQueryDefinition queryDef) {
+        startField("shipment");
+
+        _queryBuilder.append("(id:");
+        Query.appendQuotedString(_queryBuilder, id.toString());
+
+        _queryBuilder.append(')');
+
+        _queryBuilder.append('{');
+        queryDef.define(new ShipmentQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
     public String toString() {
         return _queryBuilder.toString();
     }
