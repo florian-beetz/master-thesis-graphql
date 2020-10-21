@@ -1,6 +1,7 @@
 const { ApolloServer } = require('apollo-server');
 const { ApolloGateway, RemoteGraphQLDataSource } = require('@apollo/gateway');
 const process = require('process');
+const axios = require('axios');
 
 // get configuration from environment
 const inventoryHost = process.env.INVENTORY_HOST;
@@ -38,14 +39,16 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
     }
 }
 
+// define services with the configured URLs
+const serviceList = [
+    { name: 'inventory', url: inventoryHost },
+    { name: 'order', url: orderHost },
+    { name: 'payment', url: paymentHost },
+    { name: 'shipping', url: shippingHost },
+]
+
 const gateway = new ApolloGateway({
-    // define services with the configured URLs
-    serviceList: [
-        { name: 'inventory', url: inventoryHost },
-        { name: 'order', url: orderHost },
-        { name: 'payment', url: paymentHost },
-        { name: 'shipping', url: shippingHost },
-    ],
+    serviceList,
 
     // use the pass-through implementation for every service
     buildService({ name, url }) {
@@ -72,6 +75,31 @@ const server = new ApolloServer({
     }
 });
 
-server.listen().then(({ url }) => {
-    console.log(`🚀 Server ready at ${url}`);
-});
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const isAlive = (url) => {
+    return axios.post(url, {
+        query: "query{_service{sdl}}"
+    })
+}
+
+const retry = async (n, wait, action) => {
+    try {
+        return await action();
+    } catch (err) {
+        if (n === 1) throw err;
+        await sleep(wait);
+        return await retry(n - 1, wait, action);
+    }
+}
+
+Promise.all(serviceList
+    .map(({name, url}) => retry(10, 5, async () => {
+        console.log("Checking availability of service", name)
+        await isAlive(url)
+    })))
+    .then(() => {
+        server.listen().then(({url}) => {
+            console.log(`🚀 Server ready at ${url}`);
+        });
+    });
