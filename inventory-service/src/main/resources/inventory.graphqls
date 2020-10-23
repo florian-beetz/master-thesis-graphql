@@ -46,6 +46,11 @@ type ReservationPosition {
     item: Item!
 }
 
+input ReservationPositionInput {
+    stockId: ID!
+    amount: Int!
+}
+
 type ReservationResponse implements ApiResponse {
     code: String!
     success: Boolean!
@@ -55,6 +60,12 @@ type ReservationResponse implements ApiResponse {
 }
 
 type BookOutResponse implements ApiResponse {
+    code: String!
+    success: Boolean!
+    message: String
+}
+
+type CancelReservationsResponse implements ApiResponse {
     code: String!
     success: Boolean!
     message: String
@@ -76,7 +87,9 @@ type Mutation {
 
     createItemStock(itemId: ID!, warehouseId: ID!, inStock: Int!, available: Int): ItemStock
 
-    reserveItems(itemId: ID!, amount: Int!): ReservationResponse
+    reserveItems(itemId: ID!, amount: Int!): ReservationResponse!
 
     bookOutItems(bookOutInput: BookOutInput!): BookOutResponse!
+
+    cancelReservations(reservations: [ReservationPositionInput]!): CancelReservationsResponse!
 }

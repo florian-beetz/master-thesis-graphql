@@ -14,6 +14,7 @@ import de.florianbeetz.ma.graphql.inventory.data.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 /**
@@ -43,12 +44,12 @@ public class ItemStockService {
         this.warehouseRepository = warehouseRepository;
     }
 
-    @Secured("ROLE_inventory_admin")
+    @PreAuthorize("hasRole('inventory_admin')")
     public ItemStock lookupItemStock(long id) {
         return itemStockRepository.findById(id).map(this::fromEntity).orElse(null);
     }
 
-    @Secured("ROLE_inventory_admin")
+    @PreAuthorize("hasRole('inventory_admin')")
     public ItemStock createItemStock(long itemId, long warehouseId, long inStock, long available) {
         ItemEntity item = itemRepository.findById(itemId).get(); // TODO: handle not found
         WarehouseEntity warehouse = warehouseRepository.findById(warehouseId).get();
@@ -57,7 +58,7 @@ public class ItemStockService {
         return fromEntity(itemStockRepository.save(entity));
     }
 
-    @Secured("ROLE_inventory_admin")
+    @PreAuthorize("hasRole('inventory_admin')")
     public List<ItemStock> lookupItemStockOfItem(long itemId, Integer page, Integer size) {
         return itemStockRepository.findAllByItemId(itemId, getPageRequest(page, size))
                 .stream()
@@ -65,7 +66,7 @@ public class ItemStockService {
                 .collect(Collectors.toList());
     }
 
-    @Secured("ROLE_inventory_admin")
+    @PreAuthorize("hasRole('inventory_admin')")
     public List<ItemStock> lookupItemStockOfWarehouse(long warehouseId, Integer page, Integer size) {
         return itemStockRepository.findAllByWarehouseId(warehouseId, getPageRequest(page, size))
                 .stream()

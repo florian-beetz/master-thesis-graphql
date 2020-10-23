@@ -10,6 +10,7 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 import graphql.schema.DataFetchingEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 /**
@@ -39,12 +40,12 @@ public class Query implements GraphQLQueryResolver {
         }
     }
 
-    @Secured("ROLE_inventory_admin")
+    @PreAuthorize("hasRole('inventory_admin')")
     public Warehouse warehouse(Long id, DataFetchingEnvironment dataFetchingEnvironment) {
         return warehouseService.lookupWarehouse(id);
     }
 
-    @Secured("ROLE_inventory_admin")
+    @PreAuthorize("hasRole('inventory_admin')")
     public List<Warehouse> warehouses(Integer page, Integer size, final DataFetchingEnvironment dataFetchingEnvironment) {
         return warehouseService.lookupWarehouses(page, size);
     }

@@ -85,18 +85,45 @@ public class InventoryManagementService {
     public void bookOutItems(Map<Long, Long> positions) throws ServiceException {
         Set<ItemStockEntity> updatedEntities = new HashSet<>();
         for (ItemStockEntity entity : itemStockRepository.findAllById(positions.keySet())) {
-            updatedEntities.add(bookOutItem(entity, positions.get(entity.getId())));
+            bookOutItem(entity, positions.get(entity.getId()));
+            updatedEntities.add(entity);
         }
 
         itemStockRepository.saveAll(updatedEntities);
     }
 
-    private ItemStockEntity bookOutItem(ItemStockEntity stock, long amount) throws ServiceException {
+    /**
+     * Releases items for sale in the given amount of the specified item position.
+     *
+     * @param   positions   positions to cancel.
+     *
+     * @throws  ServiceException
+     *          Signals that the reservations could not be released. This may happen if no reservation was made
+     *          beforehand.
+     */
+    public void cancelReservations(Map<Long, Long> positions) throws ServiceException {
+        Set<ItemStockEntity> updatedEntities = new HashSet<>();
+        for (ItemStockEntity entity : itemStockRepository.findAllById(positions.keySet())) {
+            cancelReservation(entity, positions.get(entity.getId()));
+            updatedEntities.add(entity);
+        }
+
+        itemStockRepository.saveAll(updatedEntities);
+    }
+
+    private void bookOutItem(ItemStockEntity stock, long amount) throws ServiceException {
         if (amount > stock.getReserved()) {
             throw new ServiceException(2, "Amount to book out (" + amount + ") exceeds reserved items (" + stock.getReserved() + ") for stock position " + stock);
         }
 
         stock.setInStock(stock.getInStock() - amount);
-        return stock;
+    }
+
+    private void cancelReservation(ItemStockEntity stock, long amount) throws ServiceException {
+        if (stock.getReserved() < amount) {
+            throw new ServiceException(3, "Amount of reservation to cancel (" + amount + ") exceeds reserved items (" + stock.getReserved() + ") for stock position " + stock);
+        }
+
+        stock.setAvailable(stock.getAvailable() + amount);
     }
 }
