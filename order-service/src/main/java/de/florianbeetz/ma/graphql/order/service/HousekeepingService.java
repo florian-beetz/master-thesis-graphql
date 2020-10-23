@@ -1,10 +1,12 @@
 package de.florianbeetz.ma.graphql.order.service;
 
+import java.util.List;
 import java.util.Map;
 
 import de.florianbeetz.ma.graphql.client.PaymentStatus;
 import de.florianbeetz.ma.graphql.client.ShippingStatus;
 import de.florianbeetz.ma.graphql.order.api.model.Order;
+import de.florianbeetz.ma.graphql.order.service.model.ReservationPosition;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,10 +21,12 @@ public class HousekeepingService {
 
     private final OrderService orderService;
     private final ShopApiService shopApiService;
+    private final InventoryService inventoryService;
 
-    public HousekeepingService(OrderService orderService, ShopApiService shopApiService) {
+    public HousekeepingService(OrderService orderService, ShopApiService shopApiService, InventoryService inventoryService) {
         this.orderService = orderService;
         this.shopApiService = shopApiService;
+        this.inventoryService = inventoryService;
     }
 
     @Scheduled(cron = "${application.housekeeping.payment-create}")
@@ -107,22 +111,34 @@ public class HousekeepingService {
 
     @Scheduled(cron = "${application.housekeeping.inventory-update}")
     public void updateInventory() {
-        log.info("Booking out items of shipped orders...");
-        int updated = 0;
+        log.info("Booking out items of shipped orders and cancelling reservations of cancelled orders...");
+        int updatedShipped = 0;
+        int updatedCancelled = 0;
 
         val orders = orderService.getUpdatableShippedOrders();
         for (val order : orders) {
             try {
-                Map<Long, Long> reservationPositions = orderService.getReservationPositions(order);
+                Map<Long, Long> reservationPositions = orderService.getReservationPositionsMap(order);
                 shopApiService.bookOutItems(reservationPositions);
                 orderService.setItemsBookedOut(order);
-                updated++;
+                updatedShipped++;
             } catch (Exception e) {
                 log.error("Failed to book out items of order id={}", order.getId(), e);
             }
         }
 
-        log.info("Booked out items of {} orders.", updated);
+        val cancelledOrders = orderService.getCancellingOrders();
+        for (val order : cancelledOrders) {
+            try {
+                List<ReservationPosition> reservationPositions = orderService.getReservationPositions(order);
+                inventoryService.cancelReservations(reservationPositions);
+                updatedCancelled++;
+            } catch (Exception e) {
+                log.error("Failed to cancel reservations of order id={}", order.getId(), e);
+            }
+        }
+
+        log.info("Booked out items of {} orders and cancelled reservations of {} orders.", updatedShipped, updatedCancelled);
     }
 
     private int cancelShipment(int cancelledShipments, Order order) {

@@ -2,12 +2,22 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.shopify.graphql.support.AbstractResponse;
+import com.shopify.graphql.support.Arguments;
+import com.shopify.graphql.support.Error;
+import com.shopify.graphql.support.Query;
 import com.shopify.graphql.support.SchemaViolationError;
+import com.shopify.graphql.support.TopLevelResponse;
+import com.shopify.graphql.support.Input;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Mutation extends AbstractResponse<Mutation> {
     public Mutation() {
@@ -20,6 +30,12 @@ public class Mutation extends AbstractResponse<Mutation> {
             switch (fieldName) {
                 case "bookOutItems": {
                     responseData.put(key, new BookOutResponse(jsonAsObject(field.getValue(), key)));
+
+                    break;
+                }
+
+                case "cancelReservations": {
+                    responseData.put(key, new CancelReservationsResponse(jsonAsObject(field.getValue(), key)));
 
                     break;
                 }
@@ -58,12 +74,7 @@ public class Mutation extends AbstractResponse<Mutation> {
                 }
 
                 case "reserveItems": {
-                    ReservationResponse optional1 = null;
-                    if (!field.getValue().isJsonNull()) {
-                        optional1 = new ReservationResponse(jsonAsObject(field.getValue(), key));
-                    }
-
-                    responseData.put(key, optional1);
+                    responseData.put(key, new ReservationResponse(jsonAsObject(field.getValue(), key)));
 
                     break;
                 }
@@ -135,6 +146,15 @@ public class Mutation extends AbstractResponse<Mutation> {
 
     public Mutation setBookOutItems(BookOutResponse arg) {
         optimisticData.put(getKey("bookOutItems"), arg);
+        return this;
+    }
+
+    public CancelReservationsResponse getCancelReservations() {
+        return (CancelReservationsResponse) get("cancelReservations");
+    }
+
+    public Mutation setCancelReservations(CancelReservationsResponse arg) {
+        optimisticData.put(getKey("cancelReservations"), arg);
         return this;
     }
 
@@ -231,6 +251,8 @@ public class Mutation extends AbstractResponse<Mutation> {
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "bookOutItems": return true;
+
+            case "cancelReservations": return true;
 
             case "createItem": return true;
 

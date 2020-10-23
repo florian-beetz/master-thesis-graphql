@@ -9,6 +9,7 @@ import com.shopify.graphql.support.SchemaViolationError;
 import de.florianbeetz.ma.graphql.client.AddressInput;
 import de.florianbeetz.ma.graphql.client.BookOutInput;
 import de.florianbeetz.ma.graphql.client.BookOutResponse;
+import de.florianbeetz.ma.graphql.client.CancelReservationsResponse;
 import de.florianbeetz.ma.graphql.client.CreatePaymentResponse;
 import de.florianbeetz.ma.graphql.client.CreateShipmentResponse;
 import de.florianbeetz.ma.graphql.client.ItemStockQuery;
@@ -20,6 +21,7 @@ import de.florianbeetz.ma.graphql.client.PaymentStatus;
 import de.florianbeetz.ma.graphql.client.QueryResponse;
 import de.florianbeetz.ma.graphql.client.QueryType;
 import de.florianbeetz.ma.graphql.client.QueryTypeQuery;
+import de.florianbeetz.ma.graphql.client.ReservationPositionInput;
 import de.florianbeetz.ma.graphql.client.ReservationResponse;
 import de.florianbeetz.ma.graphql.client.ShippingStatus;
 import de.florianbeetz.ma.graphql.client.StockPosition;
@@ -232,6 +234,22 @@ public class ShopApiService {
         }
 
         return shipment.getCost();
+    }
+
+    public void cancelReservations(Map<Long, Long> reservations) throws ApiException {
+        List<ReservationPositionInput> positions = reservations.entrySet().stream()
+                                                             .map(entry -> new ReservationPositionInput(entry.getValue(), entry.getKey()))
+                                                             .collect(Collectors.toList());
+        MutationQuery query = Operations.mutation(mutation -> mutation
+                .cancelReservations(positions, response -> response
+                        .code()
+                        .message()
+                        .success()));
+
+        CancelReservationsResponse response = mutate(query).getCancelReservations();
+        if (!response.getSuccess()) {
+            throw new ApiException("Failed to cancel reservations: " + response.getMessage() + " (code=" + response.getCode() + ")");
+        }
     }
 
     private QueryType query(QueryTypeQuery query) throws ApiException {

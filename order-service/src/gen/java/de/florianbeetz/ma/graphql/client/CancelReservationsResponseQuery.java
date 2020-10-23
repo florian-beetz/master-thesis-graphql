@@ -19,6 +19,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public interface ShipmentQueryDefinition {
-    void define(ShipmentQuery _queryBuilder);
+public class CancelReservationsResponseQuery extends Query<CancelReservationsResponseQuery> {
+    CancelReservationsResponseQuery(StringBuilder _queryBuilder) {
+        super(_queryBuilder);
+    }
+
+    public CancelReservationsResponseQuery code() {
+        startField("code");
+
+        return this;
+    }
+
+    public CancelReservationsResponseQuery message() {
+        startField("message");
+
+        return this;
+    }
+
+    public CancelReservationsResponseQuery success() {
+        startField("success");
+
+        return this;
+    }
 }

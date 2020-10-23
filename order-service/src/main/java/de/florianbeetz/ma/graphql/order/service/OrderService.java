@@ -164,7 +164,25 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    Map<Long, Long> getReservationPositions(Order order) {
+    public List<Order> getCancellingOrders() {
+        return orderRepository.findAllByStatusAndItemsBookedOutIsFalse(OrderStatus.CANCELED.name()).stream()
+                .map(this::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<ReservationPosition> getReservationPositions(Order order) {
+        List<ReservationPosition> positions = new ArrayList<>();
+
+        for (val position : order.getPositions()) {
+            for (val itemStock : position.getStock()) {
+                positions.add(new ReservationPosition(position.getItem().getId(), itemStock.getStock().getId(), itemStock.getAmount()));
+            }
+        }
+
+        return positions;
+    }
+
+    Map<Long, Long> getReservationPositionsMap(Order order) {
         return order.getPositions().stream().flatMap(pos -> pos.getStock().stream())
                 .collect(Collectors.toMap(pos -> pos.getStock().getId(), ItemStockPosition::getAmount));
     }

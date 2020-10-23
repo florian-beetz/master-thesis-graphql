@@ -2,10 +2,22 @@
 
 package de.florianbeetz.ma.graphql.client;
 
-import java.util.List;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.shopify.graphql.support.AbstractResponse;
 import com.shopify.graphql.support.Arguments;
+import com.shopify.graphql.support.Error;
 import com.shopify.graphql.support.Query;
+import com.shopify.graphql.support.SchemaViolationError;
+import com.shopify.graphql.support.TopLevelResponse;
+import com.shopify.graphql.support.Input;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class MutationQuery extends Query<MutationQuery> {
     MutationQuery(StringBuilder _queryBuilder) {
@@ -22,6 +34,30 @@ public class MutationQuery extends Query<MutationQuery> {
 
         _queryBuilder.append('{');
         queryDef.define(new BookOutResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
+    public MutationQuery cancelReservations(List<ReservationPositionInput> reservations, CancelReservationsResponseQueryDefinition queryDef) {
+        startField("cancelReservations");
+
+        _queryBuilder.append("(reservations:");
+        _queryBuilder.append('[');
+        {
+            String listSeperator1 = "";
+            for (ReservationPositionInput item1 : reservations) {
+                _queryBuilder.append(listSeperator1);
+                listSeperator1 = ",";
+                item1.appendTo(_queryBuilder);
+            }
+        }
+        _queryBuilder.append(']');
+
+        _queryBuilder.append(')');
+
+        _queryBuilder.append('{');
+        queryDef.define(new CancelReservationsResponseQuery(_queryBuilder));
         _queryBuilder.append('}');
 
         return this;
@@ -147,10 +183,13 @@ public class MutationQuery extends Query<MutationQuery> {
         return this;
     }
 
-    public MutationQuery createOrder(List<OrderPositionInput> positions, CreateOrderResponseQueryDefinition queryDef) {
+    public MutationQuery createOrder(AddressInput destinationAddress, List<OrderPositionInput> positions, CreateOrderResponseQueryDefinition queryDef) {
         startField("createOrder");
 
-        _queryBuilder.append("(positions:");
+        _queryBuilder.append("(destinationAddress:");
+        destinationAddress.appendTo(_queryBuilder);
+
+        _queryBuilder.append(",positions:");
         _queryBuilder.append('[');
         {
             String listSeperator1 = "";

@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> implements ApiResponse {
-    public UnknownApiResponse() {
+public class CancelReservationsResponse extends AbstractResponse<CancelReservationsResponse> implements ApiResponse {
+    public CancelReservationsResponse() {
     }
 
-    public UnknownApiResponse(JsonObject fields) throws SchemaViolationError {
+    public CancelReservationsResponse(JsonObject fields) throws SchemaViolationError {
         for (Map.Entry<String, JsonElement> field : fields.entrySet()) {
             String key = field.getKey();
             String fieldName = getFieldName(key);
@@ -62,60 +62,15 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
         }
     }
 
-    public static ApiResponse create(JsonObject fields) throws SchemaViolationError {
-        String typeName = fields.getAsJsonPrimitive("__typename").getAsString();
-        switch (typeName) {
-            case "BookOutResponse": {
-                return new BookOutResponse(fields);
-            }
-
-            case "CancelReservationsResponse": {
-                return new CancelReservationsResponse(fields);
-            }
-
-            case "CreateOrderResponse": {
-                return new CreateOrderResponse(fields);
-            }
-
-            case "CreatePaymentResponse": {
-                return new CreatePaymentResponse(fields);
-            }
-
-            case "CreateShipmentResponse": {
-                return new CreateShipmentResponse(fields);
-            }
-
-            case "ReservationResponse": {
-                return new ReservationResponse(fields);
-            }
-
-            case "UpdatePaymentStatusResponse": {
-                return new UpdatePaymentStatusResponse(fields);
-            }
-
-            case "UpdateShipmentStatusResponse": {
-                return new UpdateShipmentStatusResponse(fields);
-            }
-
-            case "UpdateStatusResponse": {
-                return new UpdateStatusResponse(fields);
-            }
-
-            default: {
-                return new UnknownApiResponse(fields);
-            }
-        }
-    }
-
     public String getGraphQlTypeName() {
-        return (String) get("__typename");
+        return "CancelReservationsResponse";
     }
 
     public String getCode() {
         return (String) get("code");
     }
 
-    public UnknownApiResponse setCode(String arg) {
+    public CancelReservationsResponse setCode(String arg) {
         optimisticData.put(getKey("code"), arg);
         return this;
     }
@@ -124,7 +79,7 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
         return (String) get("message");
     }
 
-    public UnknownApiResponse setMessage(String arg) {
+    public CancelReservationsResponse setMessage(String arg) {
         optimisticData.put(getKey("message"), arg);
         return this;
     }
@@ -133,7 +88,7 @@ public class UnknownApiResponse extends AbstractResponse<UnknownApiResponse> imp
         return (Boolean) get("success");
     }
 
-    public UnknownApiResponse setSuccess(Boolean arg) {
+    public CancelReservationsResponse setSuccess(Boolean arg) {
         optimisticData.put(getKey("success"), arg);
         return this;
     }

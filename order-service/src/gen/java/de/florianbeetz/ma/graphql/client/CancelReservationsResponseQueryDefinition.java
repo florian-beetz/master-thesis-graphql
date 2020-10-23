@@ -19,6 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public interface ShipmentQueryDefinition {
-    void define(ShipmentQuery _queryBuilder);
+public interface CancelReservationsResponseQueryDefinition {
+    void define(CancelReservationsResponseQuery _queryBuilder);
 }
