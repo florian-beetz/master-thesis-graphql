@@ -62,6 +62,13 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
+    void setOrderUpdated(Payment payment) throws ServiceException {
+        val paymentEntity = paymentRepository.findById(payment.getId())
+                                             .orElseThrow(() -> new ServiceException(1, "Payment does not exist."));
+        paymentEntity.setOrderUpdated(true);
+        paymentRepository.save(paymentEntity);
+    }
+
     private Payment fromEntity(PaymentEntity paymentEntity) {
         return new Payment(paymentEntity.getId(),
                 paymentEntity.getAmount(),

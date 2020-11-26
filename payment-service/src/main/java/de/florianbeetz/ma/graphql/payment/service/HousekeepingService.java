@@ -34,6 +34,7 @@ public class HousekeepingService {
                 val status = shopApiService.getOrderStatus(payment.getOrder().getId());
                 if (status == OrderStatus.CREATED) {
                     shopApiService.updateOrderStatus(payment.getOrder().getId(), OrderStatus.PAYMENT_RECEIVED);
+                    paymentService.setOrderUpdated(payment);
 
                     updated++;
                 } else if (status == OrderStatus.PAYMENT_RECEIVED) {
