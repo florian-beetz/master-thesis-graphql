@@ -34,6 +34,12 @@ public class Mutation extends AbstractResponse<Mutation> {
                     break;
                 }
 
+                case "cancelReservations": {
+                    responseData.put(key, new CancelReservationsResponse(jsonAsObject(field.getValue(), key)));
+
+                    break;
+                }
+
                 case "createItem": {
                     Item optional1 = null;
                     if (!field.getValue().isJsonNull()) {
@@ -68,12 +74,7 @@ public class Mutation extends AbstractResponse<Mutation> {
                 }
 
                 case "reserveItems": {
-                    ReservationResponse optional1 = null;
-                    if (!field.getValue().isJsonNull()) {
-                        optional1 = new ReservationResponse(jsonAsObject(field.getValue(), key));
-                    }
-
-                    responseData.put(key, optional1);
+                    responseData.put(key, new ReservationResponse(jsonAsObject(field.getValue(), key)));
 
                     break;
                 }
@@ -145,6 +146,15 @@ public class Mutation extends AbstractResponse<Mutation> {
 
     public Mutation setBookOutItems(BookOutResponse arg) {
         optimisticData.put(getKey("bookOutItems"), arg);
+        return this;
+    }
+
+    public CancelReservationsResponse getCancelReservations() {
+        return (CancelReservationsResponse) get("cancelReservations");
+    }
+
+    public Mutation setCancelReservations(CancelReservationsResponse arg) {
+        optimisticData.put(getKey("cancelReservations"), arg);
         return this;
     }
 
@@ -241,6 +251,8 @@ public class Mutation extends AbstractResponse<Mutation> {
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "bookOutItems": return true;
+
+            case "cancelReservations": return true;
 
             case "createItem": return true;
 

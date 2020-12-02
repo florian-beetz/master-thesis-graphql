@@ -9,6 +9,7 @@ import de.florianbeetz.ma.graphql.client.Mutation;
 import de.florianbeetz.ma.graphql.client.MutationQuery;
 import de.florianbeetz.ma.graphql.client.MutationResponse;
 import de.florianbeetz.ma.graphql.client.Operations;
+import de.florianbeetz.ma.graphql.client.Order;
 import de.florianbeetz.ma.graphql.client.OrderStatus;
 import de.florianbeetz.ma.graphql.client.QueryResponse;
 import de.florianbeetz.ma.graphql.client.QueryType;
@@ -72,6 +73,26 @@ public class ShopApiService {
         if (!response.getSuccess()) {
             throw new ApiException("Failed to update order status: " + response.getMessage() + " (code=" + response.getCode() + ")");
         }
+    }
+
+    public double getOrderWeight(long orderId) throws ApiException {
+        @SuppressWarnings("Convert2MethodRef")
+        val query = Operations.query(q -> q
+                .order(orderId, order -> order
+                        .positions(position -> position
+                                .amount()
+                                .item(item -> item
+                                        .weight()))));
+
+        Order order = this.query(query).getOrder();
+
+        if (order == null) {
+            throw new ApiException("Order not found.");
+        }
+
+        return order.getPositions().stream()
+             .mapToDouble(pos -> pos.getAmount() * pos.getItem().getWeight())
+             .sum();
     }
 
     private QueryType query(QueryTypeQuery query) throws ApiException {

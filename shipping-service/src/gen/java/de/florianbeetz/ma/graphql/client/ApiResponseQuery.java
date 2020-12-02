@@ -51,6 +51,13 @@ public class ApiResponseQuery extends Query<ApiResponseQuery> {
         return this;
     }
 
+    public ApiResponseQuery onCancelReservationsResponse(CancelReservationsResponseQueryDefinition queryDef) {
+        startInlineFragment("CancelReservationsResponse");
+        queryDef.define(new CancelReservationsResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+        return this;
+    }
+
     public ApiResponseQuery onCreateOrderResponse(CreateOrderResponseQueryDefinition queryDef) {
         startInlineFragment("CreateOrderResponse");
         queryDef.define(new CreateOrderResponseQuery(_queryBuilder));

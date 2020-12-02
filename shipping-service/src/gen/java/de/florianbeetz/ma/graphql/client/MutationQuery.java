@@ -39,6 +39,30 @@ public class MutationQuery extends Query<MutationQuery> {
         return this;
     }
 
+    public MutationQuery cancelReservations(List<ReservationPositionInput> reservations, CancelReservationsResponseQueryDefinition queryDef) {
+        startField("cancelReservations");
+
+        _queryBuilder.append("(reservations:");
+        _queryBuilder.append('[');
+        {
+            String listSeperator1 = "";
+            for (ReservationPositionInput item1 : reservations) {
+                _queryBuilder.append(listSeperator1);
+                listSeperator1 = ",";
+                item1.appendTo(_queryBuilder);
+            }
+        }
+        _queryBuilder.append(']');
+
+        _queryBuilder.append(')');
+
+        _queryBuilder.append('{');
+        queryDef.define(new CancelReservationsResponseQuery(_queryBuilder));
+        _queryBuilder.append('}');
+
+        return this;
+    }
+
     public class CreateItemArguments extends Arguments {
         CreateItemArguments(StringBuilder _queryBuilder) {
             super(_queryBuilder, false);
@@ -57,11 +81,11 @@ public class MutationQuery extends Query<MutationQuery> {
         void define(CreateItemArguments args);
     }
 
-    public MutationQuery createItem(double price, String title, ItemQueryDefinition queryDef) {
-        return createItem(price, title, args -> {}, queryDef);
+    public MutationQuery createItem(double price, String title, double weight, ItemQueryDefinition queryDef) {
+        return createItem(price, title, weight, args -> {}, queryDef);
     }
 
-    public MutationQuery createItem(double price, String title, CreateItemArgumentsDefinition argsDef, ItemQueryDefinition queryDef) {
+    public MutationQuery createItem(double price, String title, double weight, CreateItemArgumentsDefinition argsDef, ItemQueryDefinition queryDef) {
         startField("createItem");
 
         _queryBuilder.append("(price:");
@@ -69,6 +93,9 @@ public class MutationQuery extends Query<MutationQuery> {
 
         _queryBuilder.append(",title:");
         Query.appendQuotedString(_queryBuilder, title.toString());
+
+        _queryBuilder.append(",weight:");
+        _queryBuilder.append(weight);
 
         argsDef.define(new CreateItemArguments(_queryBuilder));
 

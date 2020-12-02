@@ -22,11 +22,17 @@ public class ShippingService {
 
     private static final double DEFAULT_SHIPPING_COST = 4.99;
 
+    public static final double COST_LARGE = 14.99;
+    public static final double COST_MEDIUM = 5.49;
+    public static final double COST_SMALL = 3.49;
+
     private final ShipmentRepository shipmentRepository;
+    private final ShopApiService shopApiService;
 
     @Autowired
-    public ShippingService(ShipmentRepository shipmentRepository) {
+    public ShippingService(ShipmentRepository shipmentRepository, ShopApiService shopApiService) {
         this.shipmentRepository = shipmentRepository;
+        this.shopApiService = shopApiService;
     }
 
     public Shipment lookupShipment(long id) {
@@ -71,7 +77,19 @@ public class ShippingService {
     }
 
     public double calculateShippingCost(long shipmentId, long orderId) {
-        return DEFAULT_SHIPPING_COST;
+        try {
+            double weight = shopApiService.getOrderWeight(orderId);
+
+            if (weight > 20) {
+                return COST_LARGE;
+            }
+            if (weight > 5) {
+                return COST_MEDIUM;
+            }
+            return COST_SMALL;
+        } catch (ApiException e) {
+            return DEFAULT_SHIPPING_COST;
+        }
     }
 
     private Shipment fromEntity(ShipmentEntity entity) {

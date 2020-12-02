@@ -90,6 +90,12 @@ public class Item extends AbstractResponse<Item> {
                     break;
                 }
 
+                case "weight": {
+                    responseData.put(key, jsonAsDouble(field.getValue(), key));
+
+                    break;
+                }
+
                 case "__typename": {
                     responseData.put(key, jsonAsString(field.getValue(), key));
                     break;
@@ -168,6 +174,15 @@ public class Item extends AbstractResponse<Item> {
         return this;
     }
 
+    public Double getWeight() {
+        return (Double) get("weight");
+    }
+
+    public Item setWeight(Double arg) {
+        optimisticData.put(getKey("weight"), arg);
+        return this;
+    }
+
     public boolean unwrapsToObject(String key) {
         switch (getFieldName(key)) {
             case "description": return false;
@@ -183,6 +198,8 @@ public class Item extends AbstractResponse<Item> {
             case "totalAvailable": return false;
 
             case "totalInStock": return false;
+
+            case "weight": return false;
 
             default: return false;
         }

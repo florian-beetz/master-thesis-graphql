@@ -103,4 +103,10 @@ public class ItemQuery extends Query<ItemQuery> {
 
         return this;
     }
+
+    public ItemQuery weight() {
+        startField("weight");
+
+        return this;
+    }
 }
