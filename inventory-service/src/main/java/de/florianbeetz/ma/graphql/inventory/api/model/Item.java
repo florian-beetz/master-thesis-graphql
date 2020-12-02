@@ -21,6 +21,8 @@ public class Item {
     private final String description;
     @Getter
     private final double price;
+    @Getter
+    private final double weight;
     private final Supplier<Long> totalAvailableSupplier;
     private final Supplier<Long> totalInStockSupplier;
 
@@ -28,6 +30,7 @@ public class Item {
                 String title,
                 String description,
                 double price,
+                double weight,
                 BiFunction<Integer, Integer, List<ItemStock>> itemStockSupplier,
                 Supplier<Long> totalAvailableSupplier,
                 Supplier<Long> totalInStockSupplier) {
@@ -36,6 +39,7 @@ public class Item {
         this.title = title;
         this.description = description;
         this.price = price;
+        this.weight = weight;
         this.totalAvailableSupplier = totalAvailableSupplier;
         this.totalInStockSupplier = totalInStockSupplier;
     }

@@ -3,6 +3,7 @@ type Item @key(fields: "id") {
     title: String!
     description: String
     price: Float!
+    weight: Float!
 
     stock(page: Int, size: Int): [ItemStock]
 
@@ -81,7 +82,7 @@ input BookOutInput {
 }
 
 type Mutation {
-    createItem(title: String!, description: String, price: Float!): Item
+    createItem(title: String!, description: String, price: Float!, weight: Float!): Item
 
     createWarehouse(name: String!): Warehouse
 

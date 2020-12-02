@@ -41,10 +41,10 @@ class ApiTest extends GraphQLTestTemplate {
                 new WarehouseEntity(null, "Warehouse 3")
         ));
         itemRepository.saveAll(List.of(
-                new ItemEntity(null, "Item 1", "description 1", 1),
-                new ItemEntity(null, "Item 2", null, 2),
-                new ItemEntity(null, "Item 3", "description 3", 3),
-                new ItemEntity(null, "Item 4", null, 4)
+                new ItemEntity(null, "Item 1", "description 1", 1, 0.1),
+                new ItemEntity(null, "Item 2", null, 2, 0.2),
+                new ItemEntity(null, "Item 3", "description 3", 3, 0.3),
+                new ItemEntity(null, "Item 4", null, 4, 0.4)
         ));
         itemStockRepository.saveAll(List.of(
                 new ItemStockEntity(null, itemRepository.findById(4L).get(), warehouseRepository.findById(1L).get(), 100, 100),

@@ -45,8 +45,8 @@ public class Mutation implements GraphQLMutationResolver {
     }
 
     @PreAuthorize("hasRole('inventory_admin')")
-    public Item createItem(String title, String description, double price) {
-        return itemService.createItem(title, description, price);
+    public Item createItem(String title, String description, double price, double weight) {
+        return itemService.createItem(title, description, price, weight);
     }
 
     @PreAuthorize("hasRole('inventory_admin')")

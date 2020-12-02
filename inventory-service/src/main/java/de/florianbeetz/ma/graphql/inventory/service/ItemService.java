@@ -41,8 +41,8 @@ public class ItemService {
      *
      * @return  a newly created item.
      */
-    public Item createItem(String title, String description, double price) {
-        ItemEntity entity = new ItemEntity(null, title, description, price);
+    public Item createItem(String title, String description, double price, double weight) {
+        ItemEntity entity = new ItemEntity(null, title, description, price, weight);
         return fromEntity(itemRepository.save(entity));
     }
 
@@ -82,6 +82,7 @@ public class ItemService {
                 entity.getTitle(),
                 entity.getDescription(),
                 entity.getPrice(),
+                entity.getWeight(),
                 (page, size) -> itemStockService.lookupItemStockOfItem(entity.getId(), page, size),
                 () -> itemStockService.lookupTotalAvailable(entity.getId()),
                 () -> itemStockService.lookupTotalInStock(entity.getId())
